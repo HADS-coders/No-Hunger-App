@@ -8,12 +8,14 @@ class MyApp extends StatelessWidget {
       title: 'No Hunger',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(primary: Colors.black),
+        ),
+        primaryColor: Colors.orange,
+        primarySwatch: Colors.orange,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: SafeArea(
-        child: SplashScreen(),
-      ),
+      home: SplashScreen(),
     );
   }
 }

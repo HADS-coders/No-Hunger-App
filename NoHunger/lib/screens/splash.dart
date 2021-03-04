@@ -1,3 +1,4 @@
+import 'package:NoHunger/constants.dart';
 import 'package:NoHunger/screens/homescreen.dart';
 import 'package:NoHunger/screens/onboarding.dart';
 import 'package:flutter/material.dart';
@@ -26,43 +27,62 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+      ),
       body: Container(
         width: double.infinity,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            Spacer(
+              flex: 1,
+            ),
             Image.asset('assets/images/logo01.png'),
-            Container(
-              width: (MediaQuery.of(context).size.width) / 2,
-              height: 10,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Stack(
+            Spacer(
+              flex: 7,
+            ),
+            TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0, end: screenWidth(context) / 2),
+              duration: Duration(seconds: 2),
+              builder: (context, value, child) => Column(
                 children: [
-                  TweenAnimationBuilder(
-                    onEnd: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  _visited ? HomeScreen() : OnBoarding()));
-                    },
-                    duration: Duration(seconds: 2),
-                    tween: Tween<double>(
-                        begin: 0, end: (MediaQuery.of(context).size.width) / 2),
-                    builder: (context, value, child) => Container(
-                      width: value,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.orange),
+                  Container(
+                    width: screenWidth(context) / 2,
+                    height: 10.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.grey),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: value,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.orange),
+                        ),
+                      ],
                     ),
                   ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                      'Removing Hunger ${(value * 100 / (screenWidth(context) / 2)).toInt()} %')
                 ],
               ),
+              onEnd: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            _visited ? HomeScreen() : OnBoarding()));
+              },
             ),
+            Spacer(
+              flex: 2,
+            )
           ],
         ),
       ),
