@@ -34,7 +34,6 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: double.infinity,
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Spacer(
               flex: 1,
