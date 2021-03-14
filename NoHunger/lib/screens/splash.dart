@@ -27,62 +27,60 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-      ),
-      body: Container(
-        width: double.infinity,
-        child: Column(
-          children: [
-            Spacer(
-              flex: 1,
-            ),
-            Image.asset('assets/images/logo01.png'),
-            Spacer(
-              flex: 7,
-            ),
-            TweenAnimationBuilder(
-              tween: Tween<double>(begin: 0, end: screenWidth(context) / 2),
-              duration: Duration(seconds: 2),
-              builder: (context, value, child) => Column(
-                children: [
-                  Container(
-                    width: screenWidth(context) / 2,
-                    height: 10.0,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.grey),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: value,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.orange),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                      'Removing Hunger ${(value * 100 / (screenWidth(context) / 2)).toInt()} %')
-                ],
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          child: Column(
+            children: [
+              Spacer(
+                flex: 1,
               ),
-              onEnd: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            _visited ? HomeScreen() : OnBoarding()));
-              },
-            ),
-            Spacer(
-              flex: 2,
-            )
-          ],
+              Image.asset('assets/images/logo01.png'),
+              Spacer(
+                flex: 7,
+              ),
+              TweenAnimationBuilder(
+                tween: Tween<double>(begin: 0, end: screenWidth(context) / 2),
+                duration: Duration(seconds: 2),
+                builder: (context, value, child) => Column(
+                  children: [
+                    Container(
+                      width: screenWidth(context) / 2,
+                      height: 10.0,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.grey),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: value,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.orange),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                        'Removing Hunger ${(value * 100 / (screenWidth(context) / 2)).toInt()} %')
+                  ],
+                ),
+                onEnd: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              _visited ? HomeScreen() : OnBoarding()));
+                },
+              ),
+              Spacer(
+                flex: 2,
+              )
+            ],
+          ),
         ),
       ),
     );

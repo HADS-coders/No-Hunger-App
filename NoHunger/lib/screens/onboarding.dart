@@ -34,109 +34,110 @@ class _OnBoardingState extends State<OnBoarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Expanded(
-            flex: 8,
-            child: Container(
-              width: double.infinity,
-              child: PageView.builder(
-                controller: controller,
-                onPageChanged: (index) {
-                  currentIndex = index;
-                  setState(() {});
-                },
-                itemCount: boardings.length,
-                itemBuilder: (context, index) => Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Image.asset(boardings[index]['title']),
-                    Text(
-                      boardings[index]['text'],
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Expanded(
-                      child: Image.asset(
-                        boardings[index]['img'],
-                        width: screenWidth(context) - 20,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              flex: 8,
+              child: Container(
+                width: double.infinity,
+                child: PageView.builder(
+                  controller: controller,
+                  onPageChanged: (index) {
+                    currentIndex = index;
+                    setState(() {});
+                  },
+                  itemCount: boardings.length,
+                  itemBuilder: (context, index) => Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Image.asset(boardings[index]['title']),
+                      Text(
+                        boardings[index]['text'],
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        child: Image.asset(
+                          boardings[index]['img'],
+                          width: screenWidth(context) - 20,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  style: ButtonStyle(
-                      overlayColor: MaterialStateProperty.all(Colors.white)),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()));
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(left: 10),
-                    child: Text(
-                      'Login',
-                    ),
-                  ),
-                ),
-                Row(
-                  children: List.generate(
-                      3,
-                      (index) => AnimatedContainer(
-                            duration: Duration(milliseconds: 250),
-                            margin: EdgeInsets.all(2),
-                            height: 8,
-                            width: index == currentIndex ? 20 : 8,
-                            decoration: BoxDecoration(
-                                color: index == currentIndex
-                                    ? Colors.orange
-                                    : Colors.grey,
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                ),
-                TextButton(
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
                     style: ButtonStyle(
                         overlayColor: MaterialStateProperty.all(Colors.white)),
-                    onPressed: () async {
-                      if (currentIndex <= 1) {
-                        controller.nextPage(
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.linear);
-                      } else {
-                        SharedPreferences _pref =
-                            await SharedPreferences.getInstance();
-                        await _pref.setBool('visited', true);
-                        //navigate to home screen
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HomeScreen()));
-                      }
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginScreen()));
                     },
                     child: Container(
-                      margin: EdgeInsets.only(right: 10),
+                      margin: EdgeInsets.only(left: 10),
                       child: Text(
-                        '${currentIndex <= 1 ? 'Next' : 'Done'}',
+                        'Login',
                       ),
-                    ))
-              ],
-            ),
-          )
-        ],
+                    ),
+                  ),
+                  Row(
+                    children: List.generate(
+                        3,
+                        (index) => AnimatedContainer(
+                              duration: Duration(milliseconds: 250),
+                              margin: EdgeInsets.all(2),
+                              height: 8,
+                              width: index == currentIndex ? 20 : 8,
+                              decoration: BoxDecoration(
+                                  color: index == currentIndex
+                                      ? Colors.orange
+                                      : Colors.grey,
+                                  borderRadius: BorderRadius.circular(20)),
+                            )),
+                  ),
+                  TextButton(
+                      style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.white)),
+                      onPressed: () async {
+                        if (currentIndex <= 1) {
+                          controller.nextPage(
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.linear);
+                        } else {
+                          SharedPreferences _pref =
+                              await SharedPreferences.getInstance();
+                          await _pref.setBool('visited', true);
+                          //navigate to home screen
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen()));
+                        }
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child: Text(
+                          '${currentIndex <= 1 ? 'Next' : 'Done'}',
+                        ),
+                      ))
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
