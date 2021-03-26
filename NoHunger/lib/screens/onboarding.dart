@@ -17,17 +17,18 @@ class _OnBoardingState extends State<OnBoarding> {
       'title': 'assets/images/logo01.png',
       'text':
           'No Hunger aims to provide food for the needy\n across the globe so that they dont have\n to sleep empty stomach',
-      'img': 'assets/images/img.jpg'
+      'img': 'assets/images/img1.jpg'
     },
     {
       'title': 'assets/images/logo01.png',
-      'text': 'No Hunger aims to provide food for the needy',
-      'img': 'assets/images/img.jpg'
+      'text':
+          'Food provided by us is well nurished with all nutrients so that everyone can live a healty life.',
+      'img': 'assets/images/img2.png'
     },
     {
       'title': 'assets/images/logo01.png',
-      'text': 'No Hunger aims to provide food for the needy across the globe',
-      'img': 'assets/images/img.jpg'
+      'text': 'Each of your donation are fully utilised to help needy. ',
+      'img': 'assets/images/img3.png'
     }
   ];
 
@@ -102,7 +103,7 @@ class _OnBoardingState extends State<OnBoarding> {
                               width: index == currentIndex ? 20 : 8,
                               decoration: BoxDecoration(
                                   color: index == currentIndex
-                                      ? Colors.orange
+                                      ? pColor
                                       : Colors.grey,
                                   borderRadius: BorderRadius.circular(20)),
                             )),
