@@ -8,22 +8,91 @@ class AddDonationAmount extends StatefulWidget {
 }
 
 class _AddDonationAmountState extends State<AddDonationAmount> {
-  double _value = 100.0;
+  double min = 100.0, max = 10000.0;
+  int incr = 100, factor = 3;
+  double _value, _prevValue, amount;
+  double width, height;
   bool isPressed;
   List<Widget> stackElements = [];
-  var photus = {1: '222'};
+  var _formKey = GlobalKey<FormState>();
+  TextEditingController _amountController = TextEditingController();
+  var elements = {
+    1: {'posi': 3, 'name': 'watermelon', 'top': 0.38, 'left': 0.26},
+    2: {'posi': 4, 'name': 'apple', 'top': 0.34, 'left': 0.42},
+    3: {'posi': 5, 'name': 'orange', 'top': 0.35, 'left': 0.17},
+    4: {'posi': 3, 'name': 'orange', 'top': 0.34, 'left': 0.24},
+    5: {'posi': 7, 'name': 'orange', 'top': 0.35, 'left': 0.27},
+    6: {'posi': 7, 'name': 'apple', 'top': 0.33, 'left': 0.18},
+    7: {'posi': 6, 'name': 'flour', 'top': 0.29, 'left': 0.09},
+    8: {'posi': 9, 'name': 'mango', 'top': 0.34, 'left': 0.38},
+    9: {'posi': 6, 'name': 'corn', 'top': 0.28, 'left': 0.195},
+    10: {'posi': 7, 'name': 'brinjal', 'top': 0.29, 'left': 0.28},
+    11: {'posi': 10, 'name': 'banana', 'top': 0.31, 'left': 0.31},
+    12: {'posi': 11, 'name': 'green apple', 'top': 0.32, 'left': 0.47},
+    13: {'posi': 5, 'name': 'watermelon', 'top': 0.26, 'left': 0.33},
+    14: {'posi': 11, 'name': 'sauce', 'top': 0.26, 'left': 0.5},
+    15: {'posi': 12, 'name': 'carrot', 'top': 0.28, 'left': 0.58},
+    16: {'posi': 7, 'name': 'bread', 'top': 0.26, 'left': 0.42}
+  };
+  int eleLength = 16, stackLength = 20;
+
+  var pos = [
+    'back',
+    'water',
+    4,
+    1,
+    13,
+    2,
+    16,
+    9,
+    10,
+    7,
+    3,
+    14,
+    11,
+    15,
+    12,
+    6,
+    8,
+    5,
+    'front'
+  ];
+
+  var posi = [
+    'orange',
+    'apple',
+    'mango',
+    'flour',
+    'green apple',
+    'carrot',
+    'banana',
+    'sauce',
+    'brinjal',
+    'corn',
+    'bread',
+    'watermelon',
+  ];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      width = screenWidth(context) -
+          (MediaQuery.of(context).padding.left +
+              MediaQuery.of(context).padding.right);
+
+      height = screenHeight(context) -
+          (MediaQuery.of(context).padding.top +
+              MediaQuery.of(context).padding.bottom);
       _buildBox();
     });
+    this._value = _prevValue = amount = min;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -39,7 +108,6 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text("Rs $_value"),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -50,9 +118,22 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                         GestureDetector(
                           child: Icon(CupertinoIcons.minus),
                           onTap: () {
-                            if (_value > 100) {
+                            if (_value > min) {
                               setState(() {
-                                _value -= 100;
+                                _value -= incr;
+                                amount = _value;
+                                updateAmount();
+
+                                var n = _value ~/ (incr * factor);
+                                if (n <= eleLength &&
+                                    stackElements.length <= stackLength) {
+                                  for (var i = stackElements.length - 4;
+                                      i > n;
+                                      i--) {
+                                    stackElements.removeAt(elements[i]['posi']);
+                                  }
+                                }
+                                _prevValue = _value;
                               });
                             }
                           },
@@ -64,29 +145,63 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                             inactiveColor: Colors.grey,
                             onChanged: (value) {
                               setState(() {
-                                _value = (value ~/ 100) * 100.toDouble();
-                                if (stackElements.length < 7) {
-                                  for (var i = 1; i < _value ~/ 100; i++) {
-                                    _addImage(count: i);
-                                    print('adding img');
+                                _value = (value ~/ incr) * incr.toDouble();
+                                amount = _value;
+                                updateAmount();
+                                var n = _value ~/ (incr * factor);
+                                if (_value > _prevValue) {
+                                  if (n <= eleLength &&
+                                      stackElements.length <= stackLength) {
+                                    for (var i = stackElements.length - 3;
+                                        i <= n;
+                                        i++) {
+                                      _addElement(elements[i]);
+                                    }
+                                  } else if (stackElements.length <
+                                          stackLength &&
+                                      n > eleLength) {
+                                    for (var i = stackElements.length - 3;
+                                        i <= eleLength;
+                                        i++) {
+                                      _addElement(elements[i]);
+                                    }
                                   }
-                                } // _addElement(count: _value ~/ 100);
+                                } else {
+                                  if (n <= eleLength &&
+                                      stackElements.length <= stackLength) {
+                                    for (var i = stackElements.length - 4;
+                                        i > n;
+                                        i--) {
+                                      stackElements
+                                          .removeAt(elements[i]['posi']);
+                                    }
+                                  }
+                                }
+                                _prevValue = _value;
                               });
                             },
-                            min: 100.0,
-                            max: 10000.0,
+                            min: min,
+                            max: max,
                           ),
                         ),
                         GestureDetector(
                           child: Icon(Icons.add),
                           onTap: () {
-                            if (_value <= 9900) {
+                            if (_value < max) {
                               setState(() {
-                                _value += 100;
-                                for (var i = 1; i < _value ~/ 100; i++) {
-                                  _addImage(count: i);
-                                  print('adding img');
+                                _value += incr;
+                                amount = _value;
+                                updateAmount();
+                                var n = _value ~/ (incr * factor);
+                                if (n <= eleLength &&
+                                    stackElements.length <= stackLength) {
+                                  for (var i = stackElements.length - 3;
+                                      i <= n;
+                                      i++) {
+                                    _addElement(elements[i]);
+                                  }
                                 }
+                                _prevValue = _value;
                               });
                             }
                           },
@@ -105,7 +220,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                               borderRadius: BorderRadius.circular(30)),
                         ),
                         child: Text(
-                          "Give ${_value ~/ 100} " +
+                          "Give ${amount ~/ incr} " +
                               (_value <= 100 ? "meal" : "meals"),
                           style: TextStyle(color: Colors.white),
                         ),
@@ -122,87 +237,349 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
     );
   }
 
-  _addElement({count, height, width, top, left, img}) {
+  void _addElement(element) {
     stackElements.insert(
-      stackElements.length - 2,
+      element['posi'],
       Positioned(
-        top: screenHeight(context) * 0.4,
-        left: screenWidth(context) * 0.3 + count * 10,
-        child: Container(
-          width: 50,
-          height: 50,
-          color: Colors.red,
+        top: height * element['top'],
+        left: width * element['left'],
+        child: Image.asset(
+          'assets/images/${element['name']}.png',
+          width: width * 0.4,
+          height: width * 0.4,
         ),
       ),
     );
-    print(stackElements.length);
   }
 
-  void _addImage({count, height, width, top, left, img}) {
-    stackElements.insert(
-      stackElements.length - 2,
-      Positioned(
-          top: screenHeight(context) * 0.4,
-          left:
-              screenWidth(context) * 0.22 + count * screenWidth(context) * 0.1,
-          child: Image.asset(
-            'assets/images/img$count.png',
-            width: screenWidth(context) * 0.2,
-            height: screenWidth(context) * 0.2,
-          )),
+  amountDialog() async {
+    await showDialog(
+        context: context,
+        builder: (context) => Dialog(
+                child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Text(
+                  'Enter your custom amount',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Our minimum donation amount is Rs 100.'),
+                SizedBox(
+                  height: 10,
+                ),
+                Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      controller: _amountController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return "Amount cannot be empty";
+                        else if (double.parse(value) < 100)
+                          return "Amount cannot be less than 100";
+                        else
+                          return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                          hintText: 'Your amount',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                    )),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        Navigator.pop(context);
+
+                        setState(() {
+                          _value =
+                              (double.parse(_amountController.text) ~/ 100) *
+                                  100.toDouble();
+                          amount = _value;
+                          if (amount > max) {
+                            _value = max;
+                          }
+                          updateAmount();
+                          var n = _value ~/ (incr * factor);
+                          if (_value > _prevValue) {
+                            if (n <= eleLength &&
+                                stackElements.length <= stackLength) {
+                              for (var i = stackElements.length - 3;
+                                  i <= n;
+                                  i++) {
+                                _addElement(elements[i]);
+                              }
+                            } else if (stackElements.length < stackLength &&
+                                n > eleLength) {
+                              for (var i = stackElements.length - 3;
+                                  i <= eleLength;
+                                  i++) {
+                                _addElement(elements[i]);
+                              }
+                            }
+                          } else {
+                            if (n <= eleLength &&
+                                stackElements.length <= stackLength) {
+                              for (var i = stackElements.length - 4;
+                                  i > n;
+                                  i--) {
+                                stackElements.removeAt(elements[i]['posi']);
+                              }
+                            }
+                          }
+                          _prevValue = _value;
+                        });
+                      }
+                    },
+                    child: Text('Confirm'),
+                  ),
+                ),
+              ]),
+            )));
+  }
+
+  void updateAmount() {
+    stackElements[0] = Positioned(
+      top: height * 0.1,
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Rs $amount",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                _amountController.text = _value.toString();
+                amountDialog();
+              })
+        ],
+      ),
     );
-    print(stackElements.length);
   }
 
-  void _buildBox({count, width, height}) {
+  void _buildBox() {
     stackElements.add(
       Positioned(
-        top: screenHeight(context) * 0.2,
-        width: screenWidth(context),
-        height: screenWidth(context),
+        top: height * 0.1,
+        width: width,
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(
+            "Rs $amount",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                _amountController.text = _value.toString();
+                amountDialog();
+              }),
+        ]),
+      ),
+    );
+    stackElements.add(
+      Positioned(
+        top: height * 0.2,
+        width: width,
+        height: width,
         child: Image.asset('assets/images/box back.png'),
       ),
     );
     stackElements.add(
       Positioned(
-          top: screenHeight(context) * 0.3,
-          left: screenWidth(context) * 0.50,
+          top: height * 0.35,
+          left: width * 0.35,
           child: Image.asset(
-            'assets/images/img3.png',
-            width: screenWidth(context) * 0.2,
-            height: screenWidth(context) * 0.2,
+            'assets/images/watermelon.png',
+            width: width * 0.4,
+            height: width * 0.4,
           )),
     );
-    stackElements.add(
-      Positioned(
-          top: screenHeight(context) * 0.3,
-          left: screenWidth(context) * 0.6,
-          child: Image.asset(
-            'assets/images/img5.png',
-            width: screenWidth(context) * 0.2,
-            height: screenWidth(context) * 0.2,
-          )),
-    );
-    stackElements.add(
-      Positioned(
-          top: screenHeight(context) * 0.35,
-          left: screenWidth(context) * 0.50,
-          child: Image.asset(
-            'assets/images/img4.png',
-            width: screenWidth(context) * 0.2,
-            height: screenWidth(context) * 0.2,
-          )),
-    );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.34,
+    //       left: width * 0.24,
+    //       child: Image.asset(
+    //         'assets/images/orange.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.38,
+    //       left: width * 0.26,
+    //       child: Image.asset(
+    //         'assets/images/watermelon.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.26,
+    //       left: width * 0.33,
+    //       child: Image.asset(
+    //         'assets/images/watermelon.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.34,
+    //       left: width * 0.42,
+    //       child: Image.asset(
+    //         'assets/images/apple.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.26,
+    //       left: width * 0.42,
+    //       child: Image.asset(
+    //         'assets/images/bread.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.28,
+    //       left: width * 0.195,
+    //       child: Image.asset(
+    //         'assets/images/corn.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.29,
+    //       left: width * 0.28,
+    //       child: Image.asset(
+    //         'assets/images/brinjal.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.29,
+    //       left: width * 0.09,
+    //       child: Image.asset(
+    //         'assets/images/flour.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.35,
+    //       left: width * 0.17,
+    //       child: Image.asset(
+    //         'assets/images/orange.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.26,
+    //       left: width * 0.5,
+    //       child: Image.asset(
+    //         'assets/images/sauce.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.31,
+    //       left: width * 0.31,
+    //       child: Image.asset(
+    //         'assets/images/banana.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.28,
+    //       left: width * 0.58,
+    //       child: Image.asset(
+    //         'assets/images/carrot.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.32,
+    //       left: width * 0.47,
+    //       child: Image.asset(
+    //         'assets/images/green apple.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.33,
+    //       left: width * 0.18,
+    //       child: Image.asset(
+    //         'assets/images/apple.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.34,
+    //       left: width * 0.38,
+    //       child: Image.asset(
+    //         'assets/images/mango.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
+    // stackElements.add(
+    //   Positioned(
+    //       top: height * 0.35,
+    //       left: width * 0.27,
+    //       child: Image.asset(
+    //         'assets/images/orange.png',
+    //         width: width * 0.4,
+    //         height: width * 0.4,
+    //       )),
+    // );
 
     stackElements.add(
       Positioned(
-        top: screenHeight(context) * 0.2 + 2,
-        width: screenWidth(context),
-        height: screenWidth(context),
+        top: height * 0.2 + 2,
+        width: width,
+        height: width,
         child: Image.asset('assets/images/box front.png'),
       ),
     );
-    print(stackElements.length);
     setState(() {});
   }
 }
