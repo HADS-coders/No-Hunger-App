@@ -14,10 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      //   elevation: 0,
-      // ),
       body: SafeArea(
         child: Column(
           children: [
@@ -64,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child: Container(
+                padding: EdgeInsets.only(left: 20, right: 20),
                 width: double.infinity,
                 margin: EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
@@ -103,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       '300 volunteers distribute food daily',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      textAlign: TextAlign.center,
                     ),
                     SizedBox(
                       height: 10,
