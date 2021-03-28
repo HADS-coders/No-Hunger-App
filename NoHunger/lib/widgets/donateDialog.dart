@@ -1,5 +1,5 @@
-import 'package:NoHunger/constants.dart';
 import 'package:NoHunger/screens/addDonationAmount.dart';
+import 'package:NoHunger/screens/addFoodDetails.dart';
 import 'package:NoHunger/widgets/customButton.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +15,7 @@ void donateDialog(BuildContext context) async {
           children: [
             customCircularButton(
                 context: context,
-                title: 'Buy Food',
+                title: 'Donate Money',
                 subTitle: '',
                 img: 'assets/images/donate-food.png',
                 onTap: () {
@@ -29,7 +29,12 @@ void donateDialog(BuildContext context) async {
                 title: 'Donate Food',
                 subTitle: '',
                 img: 'assets/images/donate-food.png',
-                onTap: () {})
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AddFoodDetails()));
+                })
           ],
         ),
       ),
