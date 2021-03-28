@@ -8,6 +8,19 @@ class BecomeVolunteer extends StatefulWidget {
 
 class _BecomeVolunteerState extends State<BecomeVolunteer> {
   final _formKey = GlobalKey<FormState>();
+  TextEditingController fName = TextEditingController();
+  TextEditingController lName = TextEditingController();
+  TextEditingController number = TextEditingController();
+  TextEditingController email = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    fName.dispose();
+    lName.dispose();
+    number.dispose();
+    email.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +53,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     TextFormField(
+                      controller: fName,
                       validator: (value) {
                         if (value.isEmpty)
                           return "First Name cannot be empty";
@@ -53,6 +67,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                               borderRadius: BorderRadius.circular(30))),
                     ),
                     TextFormField(
+                      controller: lName,
                       validator: (value) {
                         if (value.isEmpty)
                           return "Last Name cannot be empty";
@@ -66,6 +81,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                               borderRadius: BorderRadius.circular(30))),
                     ),
                     TextFormField(
+                      controller: number,
                       validator: (value) {
                         if (value.isEmpty)
                           return "Mobile Number cannot be empty";
@@ -79,6 +95,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                               borderRadius: BorderRadius.circular(30))),
                     ),
                     TextFormField(
+                      controller: email,
                       validator: (value) {
                         if (value.isEmpty)
                           return "Email cannot be empty";
@@ -109,6 +126,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                             onPressed: () {
                               if (_formKey.currentState.validate()) {
                                 print('validated');
+                                _submittedDialog(email.text.toString());
                               }
                             },
                             child: Text('Submit'))),
@@ -120,5 +138,25 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
         ),
       )),
     );
+  }
+
+  _submittedDialog(String email) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(
+                "A mail has been successfully delivered to $email. Please follow all the steps in email to volunteer with us.",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: Text("Ok"))
+              ],
+            ));
   }
 }
