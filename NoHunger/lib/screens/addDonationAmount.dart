@@ -1,4 +1,5 @@
 import 'package:NoHunger/constants.dart';
+import 'package:NoHunger/screens/moneyDonationCompleted.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -35,43 +36,6 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
     16: {'posi': 7, 'name': 'bread', 'top': 0.26, 'left': 0.42}
   };
   int eleLength = 16, stackLength = 20;
-
-  var pos = [
-    'back',
-    'water',
-    4,
-    1,
-    13,
-    2,
-    16,
-    9,
-    10,
-    7,
-    3,
-    14,
-    11,
-    15,
-    12,
-    6,
-    8,
-    5,
-    'front'
-  ];
-
-  var posi = [
-    'orange',
-    'apple',
-    'mango',
-    'flour',
-    'green apple',
-    'carrot',
-    'banana',
-    'sauce',
-    'brinjal',
-    'corn',
-    'bread',
-    'watermelon',
-  ];
 
   @override
   void initState() {
@@ -113,11 +77,11 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         SizedBox(
-                          width: 20,
+                          width: 10,
                         ),
-                        GestureDetector(
-                          child: Icon(CupertinoIcons.minus),
-                          onTap: () {
+                        IconButton(
+                          icon: Icon(CupertinoIcons.minus),
+                          onPressed: () {
                             if (_value > min) {
                               setState(() {
                                 _value -= incr;
@@ -184,9 +148,9 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                             max: max,
                           ),
                         ),
-                        GestureDetector(
-                          child: Icon(Icons.add),
-                          onTap: () {
+                        IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
                             if (_value < max) {
                               setState(() {
                                 _value += incr;
@@ -207,7 +171,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                           },
                         ),
                         SizedBox(
-                          width: 20,
+                          width: 10,
                         )
                       ],
                     ),
@@ -224,7 +188,13 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                               (_value <= 100 ? "meal" : "meals"),
                           style: TextStyle(color: Colors.white),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      MoneyDonationCompleted()));
+                        },
                       ),
                     ),
                   ],
@@ -252,7 +222,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
     );
   }
 
-  amountDialog() async {
+  void amountDialog() async {
     await showDialog(
         context: context,
         builder: (context) => Dialog(
@@ -266,7 +236,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                 SizedBox(
                   height: 10,
                 ),
-                Text('Our minimum donation amount is Rs 100.'),
+                Text('Our minimum donation amount is Rs $min.'),
                 SizedBox(
                   height: 10,
                 ),
@@ -277,8 +247,8 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                       validator: (value) {
                         if (value == null || value.isEmpty)
                           return "Amount cannot be empty";
-                        else if (double.parse(value) < 100)
-                          return "Amount cannot be less than 100";
+                        else if (double.parse(value) < min)
+                          return "Amount cannot be less than $min";
                         else
                           return null;
                       },
@@ -304,8 +274,8 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
 
                         setState(() {
                           _value =
-                              (double.parse(_amountController.text) ~/ 100) *
-                                  100.toDouble();
+                              (double.parse(_amountController.text) ~/ incr) *
+                                  incr.toDouble();
                           amount = _value;
                           if (amount > max) {
                             _value = max;
@@ -349,47 +319,35 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
             )));
   }
 
+  Widget _buildAmountText() => Positioned(
+        top: height * 0.1,
+        width: width,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              "Rs $amount",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  _amountController.text = _value.toString();
+                  amountDialog();
+                })
+          ],
+        ),
+      );
+
   void updateAmount() {
-    stackElements[0] = Positioned(
-      top: height * 0.1,
-      width: width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Rs $amount",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                _amountController.text = _value.toString();
-                amountDialog();
-              })
-        ],
-      ),
-    );
+    stackElements[0] = _buildAmountText();
   }
 
   void _buildBox() {
-    stackElements.add(
-      Positioned(
-        top: height * 0.1,
-        width: width,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(
-            "Rs $amount",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                _amountController.text = _value.toString();
-                amountDialog();
-              }),
-        ]),
-      ),
-    );
+    stackElements.add(_buildAmountText());
     stackElements.add(
       Positioned(
         top: height * 0.2,
@@ -408,170 +366,6 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
             height: width * 0.4,
           )),
     );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.34,
-    //       left: width * 0.24,
-    //       child: Image.asset(
-    //         'assets/images/orange.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.38,
-    //       left: width * 0.26,
-    //       child: Image.asset(
-    //         'assets/images/watermelon.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.26,
-    //       left: width * 0.33,
-    //       child: Image.asset(
-    //         'assets/images/watermelon.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.34,
-    //       left: width * 0.42,
-    //       child: Image.asset(
-    //         'assets/images/apple.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.26,
-    //       left: width * 0.42,
-    //       child: Image.asset(
-    //         'assets/images/bread.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.28,
-    //       left: width * 0.195,
-    //       child: Image.asset(
-    //         'assets/images/corn.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.29,
-    //       left: width * 0.28,
-    //       child: Image.asset(
-    //         'assets/images/brinjal.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.29,
-    //       left: width * 0.09,
-    //       child: Image.asset(
-    //         'assets/images/flour.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.35,
-    //       left: width * 0.17,
-    //       child: Image.asset(
-    //         'assets/images/orange.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.26,
-    //       left: width * 0.5,
-    //       child: Image.asset(
-    //         'assets/images/sauce.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.31,
-    //       left: width * 0.31,
-    //       child: Image.asset(
-    //         'assets/images/banana.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.28,
-    //       left: width * 0.58,
-    //       child: Image.asset(
-    //         'assets/images/carrot.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.32,
-    //       left: width * 0.47,
-    //       child: Image.asset(
-    //         'assets/images/green apple.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.33,
-    //       left: width * 0.18,
-    //       child: Image.asset(
-    //         'assets/images/apple.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.34,
-    //       left: width * 0.38,
-    //       child: Image.asset(
-    //         'assets/images/mango.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-    // stackElements.add(
-    //   Positioned(
-    //       top: height * 0.35,
-    //       left: width * 0.27,
-    //       child: Image.asset(
-    //         'assets/images/orange.png',
-    //         width: width * 0.4,
-    //         height: width * 0.4,
-    //       )),
-    // );
-
     stackElements.add(
       Positioned(
         top: height * 0.2 + 2,
