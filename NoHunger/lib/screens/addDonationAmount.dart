@@ -1,5 +1,5 @@
 import 'package:NoHunger/constants.dart';
-import 'package:NoHunger/screens/moneyDonationCompleted.dart';
+import 'package:NoHunger/screens/confirmDonation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -193,7 +193,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      MoneyDonationCompleted()));
+                                      ConfirmDonation(amount)));
                         },
                       ),
                     ),
