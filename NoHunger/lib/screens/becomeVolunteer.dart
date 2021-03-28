@@ -99,8 +99,11 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                       validator: (value) {
                         if (value.isEmpty)
                           return "Email cannot be empty";
-                        else
+                        else if (!value.contains('@') && !value.contains('.')) {
+                          return 'Email is not valid';
+                        } else {
                           return null;
+                        }
                       },
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(

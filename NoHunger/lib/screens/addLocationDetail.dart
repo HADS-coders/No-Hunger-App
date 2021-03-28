@@ -109,6 +109,8 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Email cannot be empty";
+                      } else if (!value.contains('@') && !value.contains('.')) {
+                        return 'Email is not valid';
                       } else {
                         return null;
                       }
