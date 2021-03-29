@@ -19,6 +19,7 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('Confirm Donation'),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
