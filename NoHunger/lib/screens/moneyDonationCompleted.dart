@@ -22,8 +22,9 @@ class MoneyDonationCompleted extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
+                      Navigator.pop(context); //pop current screen
+                      Navigator.pop(context); //pop confirmation screen
+                      Navigator.pop(context); //pop select amount screen
                     },
                     child: Text('Done'),
                     style: ElevatedButton.styleFrom(
