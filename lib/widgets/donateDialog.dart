@@ -17,7 +17,7 @@ void donateDialog(BuildContext context) async {
                 context: context,
                 title: 'Donate Money',
                 subTitle: '',
-                img: 'assets/images/donate-food.png',
+                img: 'assets/images/donate-money.jpeg',
                 onTap: () {
                   Navigator.pushReplacement(
                       context,
