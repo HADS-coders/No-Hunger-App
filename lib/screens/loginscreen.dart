@@ -1,3 +1,5 @@
+import 'package:NoHunger/models/volunteer.dart';
+import 'package:NoHunger/screens/loginStatus.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -8,7 +10,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _email = TextEditingController();
-  TextEditingController _passwword = TextEditingController();
+  TextEditingController _password = TextEditingController();
 
   bool _obscureText = true;
 
@@ -57,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(30))),
                       ),
                       TextFormField(
-                        controller: _passwword,
+                        controller: _password,
                         validator: (value) {
                           if (value.isEmpty) {
                             return "Password cannot be empty";
@@ -91,10 +93,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30)),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               print('validated');
-                              print('${_email.text} and ${_passwword.text}');
+                              print('${_email.text} and ${_password.text}');
+                              var message = await Volunteer.login(
+                                  _email.text, _password.text);
+
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          LoginStatus(message)));
                             }
                           },
                           child: Text('Login'),

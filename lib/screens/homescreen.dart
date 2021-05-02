@@ -4,6 +4,7 @@ import 'package:NoHunger/widgets/donateDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:NoHunger/screens/becomeVolunteer.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -118,6 +119,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     //open website in browser
                     var pref = await SharedPreferences.getInstance();
                     await pref.setBool('visited', false);
+
+                    Map<String, dynamic> parameter = {
+                      'pid': '1',
+                    };
+                    var response = await http.get(
+                      Uri.https('pure-mountain-72218.herokuapp.com',
+                          'api/read_single.php', parameter),
+                    );
+                    print(response.body);
                   },
                   icon: Icon(Icons.exit_to_app),
                 ),
