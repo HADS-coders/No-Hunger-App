@@ -1,6 +1,7 @@
 import 'package:NoHunger/screens/foodDonationCompleted.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:NoHunger/widgets/getFutureData.dart';
 
 class AddLocationDetail extends StatefulWidget {
   @override
@@ -258,33 +259,12 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
 
-    currentPosition = await _getPosition();
+    currentPosition = await getFutureData(context,
+        Geolocator.getCurrentPosition(timeLimit: Duration(seconds: 100)));
+
     setState(() {
       location = '${currentPosition.latitude}  ${currentPosition.longitude}';
     });
-    return currentPosition;
-  }
-
-  Future<Position> _getPosition() async {
-    Position currentPosition;
-    await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('Getting current location'),
-              content: Center(
-                child: FutureBuilder(
-                  future: Geolocator.getCurrentPosition(
-                      timeLimit: Duration(seconds: 100)),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      currentPosition = snapshot.data;
-                      Navigator.pop(context);
-                    }
-                    return CircularProgressIndicator();
-                  },
-                ),
-              ),
-            ));
     return currentPosition;
   }
 }
