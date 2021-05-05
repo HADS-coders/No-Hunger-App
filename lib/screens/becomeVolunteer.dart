@@ -144,6 +144,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
   _submittedDialog(String email) {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) => AlertDialog(
               title: Text(
                 "A mail has been successfully delivered to $email. Please follow all the steps in email to volunteer with us.",

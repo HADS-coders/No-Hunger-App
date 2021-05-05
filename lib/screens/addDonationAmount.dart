@@ -221,6 +221,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
   void amountDialog() async {
     await showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) => Dialog(
                 child: Padding(
               padding: const EdgeInsets.all(10.0),
