@@ -1,5 +1,5 @@
 import 'package:NoHunger/models/volunteer.dart';
-import 'package:NoHunger/screens/loginStatus.dart';
+import 'package:NoHunger/widgets/getFutureData.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +13,9 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _password = TextEditingController();
 
   bool _obscureText = true;
+
+  ///Check if password correct or not
+  bool isCorrect = true;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) {
                           if (value.isEmpty) {
                             return "Password cannot be empty";
-                          } else {
+                          } else if (!isCorrect)
+                            return "Incorrect password";
+                          else {
                             return null;
                           }
                         },
@@ -96,15 +101,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               print('validated');
-                              print('${_email.text} and ${_password.text}');
-                              var message = await Volunteer.login(
-                                  _email.text, _password.text);
+                              var message = await getFutureData(context,
+                                  Volunteer.login(_email.text, _password.text));
 
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          LoginStatus(message)));
+                              isCorrect = message;
+
+                              if (_formKey.currentState.validate())
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, 'foodRequests', (route) => false);
+                              else
+                                isCorrect = !isCorrect;
                             }
                           },
                           child: Text('Login'),
@@ -120,34 +126,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Expanded(flex: 2, child: Container()),
-              // Expanded(
-              //   flex: 2,
-              //   child: Column(
-              //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //     children: [
-              //       Container(
-              //         width: double.infinity,
-              //         child: OutlinedButton(
-              //           style: OutlinedButton.styleFrom(
-              //               shape: RoundedRectangleBorder(
-              //                   borderRadius: BorderRadius.circular(30))),
-              //           onPressed: () {},
-              //           child: Text('Login with Google'),
-              //         ),
-              //       ),
-              //       Container(
-              //         width: double.infinity,
-              //         child: OutlinedButton(
-              //           style: OutlinedButton.styleFrom(
-              //               shape: RoundedRectangleBorder(
-              //                   borderRadius: BorderRadius.circular(30))),
-              //           onPressed: () {},
-              //           child: Text('Login with Apple ID'),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
             ],
           ),
         ),

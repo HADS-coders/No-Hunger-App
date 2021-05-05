@@ -1,17 +1,20 @@
 import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Volunteer {
   String name;
-  String username;
-  String email;
   int number;
+  String email;
   String password;
   String gender;
+  Position location;
+  int range;
 
   Volunteer();
 
-  static Future<String> login(String email, String password) async {
+  static login(String email, String password) async {
     var body = jsonEncode({'email': email, 'password': password});
 
     var response = await http.post(
@@ -21,9 +24,18 @@ class Volunteer {
 
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body.toString());
-      print(responseJson['message']);
-      return responseJson['message'];
+      bool success = responseJson['message'] == 'Login Success';
+      if (success) {
+        var pref = await SharedPreferences.getInstance();
+        pref.setBool('loggedIn', true);
+      }
+      return success;
     }
-    return 'Network issue, Login failed';
+    return false;
+  }
+
+  static logout() async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool('loggedIn', false);
   }
 }

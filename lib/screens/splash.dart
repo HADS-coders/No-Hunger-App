@@ -1,6 +1,4 @@
 import 'package:NoHunger/constants.dart';
-import 'package:NoHunger/screens/homescreen.dart';
-import 'package:NoHunger/screens/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,11 +8,13 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  var _visited;
+  bool _visited;
+  bool _loggedIn;
   @override
   void initState() {
     super.initState();
     isVisited();
+    isLoggedIn();
   }
 
   ///Funtion to check if onboarding screen is visited or not using Shared Preferences
@@ -22,6 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     var visited = _pref.getBool('visited') ?? false;
     _visited = visited;
+  }
+
+  ///Funtion to check if user is logged in or not using Shared Preferences
+  void isLoggedIn() async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    _loggedIn = _pref.getBool('visited') ?? false;
   }
 
   @override
@@ -69,11 +75,12 @@ class _SplashScreenState extends State<SplashScreen> {
                   ],
                 ),
                 onEnd: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              _visited ? HomeScreen() : OnBoarding()));
+                  if (_loggedIn) {
+                    print('logged in');
+                    Navigator.pushReplacementNamed(context, 'foodRequests');
+                  } else
+                    Navigator.pushReplacementNamed(
+                        context, _visited ? 'home' : 'onBoarding');
                 },
               ),
               Spacer(
