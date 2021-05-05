@@ -117,7 +117,7 @@ class _OnBoardingState extends State<OnBoarding> {
                               await SharedPreferences.getInstance();
                           await _pref.setBool('visited', true);
                           //navigate to home screen
-                          Navigator.pushReplacementNamed(context, 'login');
+                          Navigator.pushReplacementNamed(context, 'home');
                         }
                       },
                       child: Container(

@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
   ///Funtion to check if user is logged in or not using Shared Preferences
   void isLoggedIn() async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
-    _loggedIn = _pref.getBool('visited') ?? false;
+    _loggedIn = _pref.getBool('loggedIn') ?? false;
   }
 
   @override
