@@ -1,5 +1,4 @@
 import 'package:NoHunger/constants.dart';
-import 'package:NoHunger/screens/confirmDonation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -189,11 +188,8 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ConfirmDonation(amount)));
+                          Navigator.pushNamed(context, 'confirmDonation',
+                              arguments: {'data': amount});
                         },
                       ),
                     ),

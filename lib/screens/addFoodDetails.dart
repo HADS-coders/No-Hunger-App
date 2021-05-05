@@ -1,4 +1,3 @@
-import 'package:NoHunger/screens/addLocationDetail.dart';
 import 'package:flutter/material.dart';
 
 class AddFoodDetails extends StatefulWidget {
@@ -148,10 +147,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
                     borderRadius: BorderRadius.circular(30))),
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddLocationDetail()));
+                Navigator.pushNamed(context, 'addLocation');
               }
             },
             child: Text('Next')),

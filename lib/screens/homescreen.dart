@@ -3,7 +3,6 @@ import 'package:NoHunger/widgets/customButton.dart';
 import 'package:NoHunger/widgets/donateDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:NoHunger/screens/becomeVolunteer.dart';
 import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
@@ -49,10 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     subTitle: 'Distribute food to the needy',
                     img: 'assets/images/become-volunteer.png',
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BecomeVolunteer()));
+                      Navigator.pushNamed(context, 'becomeVolunteer');
                     }),
               ],
             ),

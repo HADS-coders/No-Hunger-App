@@ -1,4 +1,3 @@
-import 'package:NoHunger/screens/foodDonationCompleted.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:NoHunger/widgets/getFutureData.dart';
@@ -176,11 +175,8 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                                 borderRadius: BorderRadius.circular(30))),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        FoodDonationComleted()));
+                            Navigator.pushNamed(
+                                context, 'foodDonationCompleted');
                           }
                         },
                         child: Text('Next')),

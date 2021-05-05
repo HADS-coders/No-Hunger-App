@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class FoodDonationComleted extends StatelessWidget {
+class FoodDonationCompleted extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,9 +22,7 @@ class FoodDonationComleted extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context); //pop current screen
-                      Navigator.pop(context); //pop location screen
-                      Navigator.pop(context); //pop food detail screen
+                      Navigator.popUntil(context, ModalRoute.withName('home'));
                     },
                     child: Text('Done'),
                     style: ElevatedButton.styleFrom(

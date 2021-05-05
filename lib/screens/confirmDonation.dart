@@ -1,16 +1,14 @@
-import 'package:NoHunger/screens/moneyDonationCompleted.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDonation extends StatefulWidget {
-  ConfirmDonation(this.amount);
-
-  final double amount;
+  ConfirmDonation();
 
   @override
   _ConfirmDonationState createState() => _ConfirmDonationState();
 }
 
 class _ConfirmDonationState extends State<ConfirmDonation> {
+  double amount;
   TextEditingController name = TextEditingController();
   TextEditingController number = TextEditingController();
   TextEditingController email = TextEditingController();
@@ -18,6 +16,11 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
 
   @override
   Widget build(BuildContext context) {
+    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+    if (arguments != null) {
+      amount = arguments['data'];
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -40,7 +43,7 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
                       style: TextStyle(fontSize: 18),
                     ),
                     Text(
-                      widget.amount.toString(),
+                      amount.toString(),
                       style: TextStyle(fontSize: 18),
                     )
                   ],
@@ -98,11 +101,8 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
                               borderRadius: BorderRadius.circular(30))),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      MoneyDonationCompleted()));
+                          Navigator.pushNamed(
+                              context, 'moneyDonationCompleted');
                         }
                       },
                       child: Text('Confirm')),

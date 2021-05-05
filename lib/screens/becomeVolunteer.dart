@@ -1,4 +1,3 @@
-import 'package:NoHunger/screens/loginscreen.dart';
 import 'package:flutter/material.dart';
 
 class BecomeVolunteer extends StatefulWidget {
@@ -34,8 +33,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
           TextButton(
             child: Text('Login'),
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
+              Navigator.pushNamed(context, 'login');
             },
           ),
         ],
@@ -155,8 +153,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
               actions: [
                 TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
+                      Navigator.popUntil(context, ModalRoute.withName('home'));
                     },
                     child: Text("Ok"))
               ],

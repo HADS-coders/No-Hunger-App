@@ -1,6 +1,4 @@
 import 'package:NoHunger/constants.dart';
-import 'package:NoHunger/screens/homescreen.dart';
-import 'package:NoHunger/screens/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -81,10 +79,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     style: ButtonStyle(
                         overlayColor: MaterialStateProperty.all(Colors.white)),
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen()));
+                      Navigator.pushNamed(context, 'login');
                     },
                     child: Container(
                       margin: EdgeInsets.only(left: 10),
@@ -122,10 +117,7 @@ class _OnBoardingState extends State<OnBoarding> {
                               await SharedPreferences.getInstance();
                           await _pref.setBool('visited', true);
                           //navigate to home screen
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()));
+                          Navigator.pushReplacementNamed(context, 'login');
                         }
                       },
                       child: Container(
