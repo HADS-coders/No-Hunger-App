@@ -104,11 +104,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               var message = await getFutureData(context,
                                   Volunteer.login(_email.text, _password.text));
 
-                              isCorrect = message;
+                              isCorrect = message['success'];
 
                               if (_formKey.currentState.validate())
                                 Navigator.pushNamedAndRemoveUntil(
-                                    context, 'foodRequests', (route) => false);
+                                    context, 'foodRequests', (route) => false,
+                                    arguments: {'data': message['data']});
                               else
                                 isCorrect = !isCorrect;
                             }
@@ -120,7 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: null,
                         child: Text('Forgot password?'),
                       ),
-                      // Text('OR'),
                     ],
                   ),
                 ),
