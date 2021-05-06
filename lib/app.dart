@@ -11,6 +11,7 @@ import 'package:NoHunger/screens/loginscreen.dart';
 import 'package:NoHunger/screens/moneyDonationCompleted.dart';
 import 'package:NoHunger/screens/onboarding.dart';
 import 'package:NoHunger/screens/splash.dart';
+import 'package:NoHunger/screens/volunteerProfile.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         'foodDonationCompleted': (context) => FoodDonationCompleted(),
         'becomeVolunteer': (context) => BecomeVolunteer(),
         'foodRequests': (context) => FoodRequests(),
+        'volunteerProfile': (context) => VolunteerProfile(),
       },
       home: SplashScreen(),
     );
