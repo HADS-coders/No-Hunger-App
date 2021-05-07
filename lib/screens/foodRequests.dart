@@ -12,28 +12,18 @@ class _FoodRequestsState extends State<FoodRequests> {
   List<Map<String, dynamic>> drawerItems = [
     {'name': 'Donate', 'routeName': null},
     {'name': 'Profile', 'routeName': 'volunteerProfile'},
+    {'name': 'Requests History', 'routeName': 'requestsHistory'},
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    getVolFromDb();
-  }
-
-  void getVolFromDb() async {
+  Future<Volunteer> getVolFromDb() async {
     var _vol = await vol.getVol();
-    if (_vol != null) {
-      setState(() {
-        vol = _vol;
-      });
-    }
+    return _vol;
   }
 
   @override
   Widget build(BuildContext context) {
-    context = context;
-    Map arg = ModalRoute.of(context).settings.arguments as Map;
-    if (arg != null) vol = arg['data'];
+    // Map arg = ModalRoute.of(context).settings.arguments as Map;
+    // if (arg != null) vol = arg['data'];
     return Scaffold(
       appBar: AppBar(
         title: Text('Food Requests'),
@@ -54,11 +44,12 @@ class _FoodRequestsState extends State<FoodRequests> {
             itemBuilder: (context, index) => ListTile(
                 title: Text(drawerItems[index]['name']),
                 onTap: () {
-                  if (drawerItems[index]['routeName'] != null)
+                  if (drawerItems[index]['routeName'] != null) {
+                    Navigator.pop(context);
                     Navigator.pushNamed(
                         context, drawerItems[index]['routeName'],
                         arguments: {'data': vol});
-                  else {
+                  } else {
                     Navigator.pop(context);
                     donateDialog(context);
                   }
@@ -67,16 +58,25 @@ class _FoodRequestsState extends State<FoodRequests> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ListTile(
-                  title: Text(vol.name),
-                  subtitle: Text(
-                    vol.email,
-                  ))
-            ],
-          ),
+        child: FutureBuilder(
+          future: getVolFromDb(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              vol = snapshot.data;
+              return Column(
+                children: [
+                  ListTile(
+                      title: Text(vol.name),
+                      subtitle: Text(
+                        vol.email,
+                      ))
+                ],
+              );
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         ),
       ),
     );
