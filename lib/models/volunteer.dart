@@ -45,12 +45,8 @@ class Volunteer {
   Future<void> insertVol(Volunteer vol) async {
     final Database db = await Db.getDatabase();
 
-    //clear the db before inserting
-    // await db.delete(table);
-
     await db.insert('vol', vol.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
-    db.close();
   }
 
   Future<Volunteer> getVol() async {
@@ -59,7 +55,6 @@ class Volunteer {
     if (result != null) {
       print(result);
       var vol = Volunteer().fromMap(result[0]);
-      db.close();
       return vol;
     } else
       return null;
