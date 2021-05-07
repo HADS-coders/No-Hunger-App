@@ -1,4 +1,7 @@
+import 'package:NoHunger/models/donator.dart';
+import 'package:NoHunger/models/food.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:NoHunger/widgets/getFutureData.dart';
 
@@ -8,7 +11,8 @@ class AddLocationDetail extends StatefulWidget {
 }
 
 class _AddLocationDetailState extends State<AddLocationDetail> {
-  var location;
+  Food food;
+  Position location;
   var _selectedType = 'set';
   var _formKey = GlobalKey<FormState>();
   TextEditingController name = TextEditingController();
@@ -20,6 +24,8 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
 
   @override
   Widget build(BuildContext context) {
+    Map arg = ModalRoute.of(context).settings.arguments as Map;
+    if (arg != null) food = arg['data'];
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -41,8 +47,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                       print('${_location.latitude}  ${_location.longitude}');
                       setState(() {
                         _selectedType = 'get';
-                        location =
-                            '${_location.latitude}  ${_location.longitude}';
+                        location = _location;
                       });
                     },
                     child: ListTile(
@@ -132,7 +137,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                       },
                       keyboardType: TextInputType.streetAddress,
                       decoration: InputDecoration(
-                        labelText: 'Street address',
+                        labelText: 'Address',
                       ),
                     ),
                     TextFormField(
@@ -173,10 +178,35 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30))),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState.validate()) {
+                            Donator donator;
+                            if (_selectedType == 'set') {
+                              List<Location> locations = await GeocodingPlatform
+                                  .instance
+                                  .locationFromAddress(
+                                      '${address.text}, ${city.text}, ${pincode.text.toString()}');
+                              Location setLocation = locations[0];
+                              donator = Donator(
+                                  name: name.text,
+                                  number: int.parse(number.text),
+                                  email: email.text,
+                                  latitude: setLocation.latitude,
+                                  longitude: setLocation.longitude,
+                                  food: food);
+                            } else {
+                              donator = Donator(
+                                  name: name.text,
+                                  number: int.parse(number.text),
+                                  email: email.text,
+                                  latitude: location.latitude,
+                                  longitude: location.longitude,
+                                  food: food);
+                            }
+
                             Navigator.pushNamed(
-                                context, 'foodDonationCompleted');
+                                context, 'foodDonationCompleted',
+                                arguments: {'data': donator});
                           }
                         },
                         child: Text('Next')),
@@ -259,7 +289,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
         Geolocator.getCurrentPosition(timeLimit: Duration(seconds: 100)));
 
     setState(() {
-      location = '${currentPosition.latitude}  ${currentPosition.longitude}';
+      location = currentPosition;
     });
     return currentPosition;
   }
