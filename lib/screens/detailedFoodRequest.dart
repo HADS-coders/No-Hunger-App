@@ -29,7 +29,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text('Food Type: ${donation.name}'),
+              child: Text('Food Type: ${donation.food.type}'),
             ),
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
