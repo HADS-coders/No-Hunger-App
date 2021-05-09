@@ -4,6 +4,7 @@ import 'package:NoHunger/screens/addFoodDetails.dart';
 import 'package:NoHunger/screens/addLocationDetail.dart';
 import 'package:NoHunger/screens/becomeVolunteer.dart';
 import 'package:NoHunger/screens/confirmDonation.dart';
+import 'package:NoHunger/screens/detailedFoodRequest.dart';
 import 'package:NoHunger/screens/foodDonationCompleted.dart';
 import 'package:NoHunger/screens/foodRequests.dart';
 import 'package:NoHunger/screens/homescreen.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         'becomeVolunteer': (context) => BecomeVolunteer(),
         'foodRequests': (context) => FoodRequests(),
         'volunteerProfile': (context) => VolunteerProfile(),
+        'detailedFoodRequest': (context) => DetailedFoodRequest(),
       },
       home: SplashScreen(),
     );
