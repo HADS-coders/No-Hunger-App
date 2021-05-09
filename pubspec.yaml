@@ -26,8 +26,8 @@ dependencies:
   shared_preferences: ^2.0.5
   geolocator: ^7.0.1
   http: ^0.13.1
-  sqflite:
-  path:
+  sqflite: ^2.0.0+3
+  path: ^1.8.0
   geocoding: ^2.0.0
   url_launcher: ^6.0.3
 
