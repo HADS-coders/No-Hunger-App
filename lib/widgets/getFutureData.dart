@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 ///Function to get data from a future and display a dialog with circlular progress indicator while data is fetched.
-getFutureData(BuildContext context, var future) async {
+Future<dynamic> getFutureData(BuildContext context, var future) async {
   var data;
   await showDialog(
     context: context,

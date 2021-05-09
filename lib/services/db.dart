@@ -24,7 +24,7 @@ class Db {
       join(await getDatabasesPath(), _dbName),
       onCreate: (db, version) {
         db.execute(
-            'CREATE TABLE vol (name TEXT,email TEXT,number INTEGER,gender TEXT,location TEXT,range INTEGER)');
+            'CREATE TABLE vol (name TEXT,email TEXT,number INTEGER,gender TEXT,latitude REAL,longitude REAL,range INTEGER)');
       },
       version: _dbVersion,
     );
