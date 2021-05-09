@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:NoHunger/services/db.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -12,7 +11,8 @@ class Volunteer {
   String email;
   String password;
   String gender;
-  Position location;
+  double latitude;
+  double longitude;
   int range;
 
   Volunteer(
@@ -20,7 +20,8 @@ class Volunteer {
       this.number,
       this.email,
       this.gender,
-      this.location,
+      this.latitude,
+      this.longitude,
       this.range});
 
   Map<String, dynamic> toMap() => {
@@ -28,7 +29,8 @@ class Volunteer {
         'number': number,
         'email': email,
         'gender': gender,
-        'location': location,
+        'latitude': latitude,
+        'longitude': longitude,
         'range': range
       };
 
@@ -38,7 +40,8 @@ class Volunteer {
         number: int.parse(data['number'].toString()),
         email: data['email'],
         gender: data['gender'],
-        location: data['location'],
+        latitude: double.parse(data['latitude'].toString()),
+        longitude: double.parse(data['longitude'].toString()),
         range: int.parse(data['range'].toString() ?? '0'));
   }
 
@@ -53,7 +56,7 @@ class Volunteer {
     final Database db = await Db.getDatabase();
     var result = await db.query(table); //same as select * from table
     if (result != null) {
-      print(result);
+      print('Vol from db: $result');
       var vol = Volunteer().fromMap(result[0]);
       return vol;
     } else
@@ -81,6 +84,7 @@ class Volunteer {
           };
       if (success) {
         print('login succcess');
+        print('vol data from response: $data');
         var pref = await SharedPreferences.getInstance();
         pref.setBool('loggedIn', true);
         if (data != null) {

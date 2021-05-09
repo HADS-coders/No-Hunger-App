@@ -4,7 +4,7 @@ class Food {
   final String type;
   final List<FoodItem> foodItems;
   String time;
-  final bool havePackets;
+  final int havePackets;
 
   Food({this.type, this.foodItems, this.time, this.havePackets});
 
