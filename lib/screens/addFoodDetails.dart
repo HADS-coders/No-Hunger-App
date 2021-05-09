@@ -1,3 +1,5 @@
+import 'package:NoHunger/models/food.dart';
+import 'package:NoHunger/models/foodItem.dart';
 import 'package:flutter/material.dart';
 
 class AddFoodDetails extends StatefulWidget {
@@ -147,7 +149,22 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
                     borderRadius: BorderRadius.circular(30))),
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                Navigator.pushNamed(context, 'addLocation');
+                List<FoodItem> foodItems = [];
+                _foodItemMap.forEach((key, value) {
+                  FoodItem foodItem = FoodItem(
+                      name: value['name'],
+                      amount: double.parse(value['amount']).toInt());
+                  foodItems.add(foodItem);
+                });
+
+                Food food = Food(
+                    type: _foodType,
+                    foodItems: foodItems,
+                    time: time.text ?? null,
+                    havePackets: havePackets == 'Yes' ? 1 : 0);
+
+                Navigator.pushNamed(context, 'addLocation',
+                    arguments: {'data': food});
               }
             },
             child: Text('Next')),
