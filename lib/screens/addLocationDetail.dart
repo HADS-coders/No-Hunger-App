@@ -1,4 +1,6 @@
-import 'package:NoHunger/models/donator.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:NoHunger/models/donation.dart';
 import 'package:NoHunger/models/food.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -180,36 +182,50 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                                 borderRadius: BorderRadius.circular(30))),
                         onPressed: () async {
                           if (_formKey.currentState.validate()) {
-                            Donator donator;
+                            Donation donation;
                             if (_selectedType == 'set') {
                               List<Location> locations = await GeocodingPlatform
                                   .instance
                                   .locationFromAddress(
                                       '${address.text}, ${city.text}, ${pincode.text.toString()}');
                               Location setLocation = locations[0];
-                              donator = Donator(
+                              donation = Donation(
                                   name: name.text,
                                   number: int.parse(number.text),
                                   email: email.text,
                                   latitude: setLocation.latitude,
                                   longitude: setLocation.longitude,
-                                  food: food);
+                                  food: food,
+                                  time: DateTime.now());
                             } else {
-                              donator = Donator(
+                              donation = Donation(
                                   name: name.text,
                                   number: int.parse(number.text),
                                   email: email.text,
                                   latitude: location.latitude,
                                   longitude: location.longitude,
-                                  food: food);
+                                  food: food,
+                                  time: DateTime.now());
                             }
+                            // print(donation.toMap());
 
-                            Navigator.pushNamed(
-                                context, 'foodDonationCompleted',
-                                arguments: {'data': donator});
+                            bool donationSuccessful = await getFutureData(
+                                context, sendDonationRequest(donation));
+
+                            if (donationSuccessful)
+                              Navigator.pushNamed(
+                                  context, 'foodDonationCompleted',
+                                  arguments: {'data': donation});
+                            else
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text(
+                                            'Food Donation Unsuccessful. Try again later'),
+                                      ));
                           }
                         },
-                        child: Text('Next')),
+                        child: Text('Request Food Donation')),
                   )
                 ],
               ),
@@ -220,7 +236,22 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
     );
   }
 
-  _enableLocation() {
+  Future<bool> sendDonationRequest(Donation donation) async {
+    var body = jsonEncode(donation.toMap());
+
+    var response = await http.post(
+        Uri.https('pure-mountain-72218.herokuapp.com', 'api/addDonation.php'),
+        headers: {'Content-Type': 'application/json'},
+        body: body);
+
+    if (response.statusCode == 200) {
+      var responseBody = json.decode(response.body);
+      return responseBody['message'] == 'Success';
+    }
+    return false;
+  }
+
+  void _enableLocation() {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
