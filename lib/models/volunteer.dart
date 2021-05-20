@@ -6,6 +6,7 @@ import 'package:sqflite/sqlite_api.dart';
 
 class Volunteer {
   final String table = 'vol';
+  int id;
   String name;
   int number;
   String email;
@@ -16,7 +17,8 @@ class Volunteer {
   int range;
 
   Volunteer(
-      {this.name,
+      {this.id,
+      this.name,
       this.number,
       this.email,
       this.gender,
@@ -25,24 +27,26 @@ class Volunteer {
       this.range});
 
   Map<String, dynamic> toMap() => {
+        'vol_id': id,
         'name': name,
         'number': number,
         'email': email,
         'gender': gender,
         'latitude': latitude,
         'longitude': longitude,
-        'range': range
+        'rangeKm': range
       };
 
   Volunteer fromMap(Map data) {
     return Volunteer(
+        id: int.parse(data['vol_id'].toString()),
         name: data['name'],
         number: int.parse(data['number'].toString()),
         email: data['email'],
         gender: data['gender'],
         latitude: double.parse(data['latitude'].toString()),
         longitude: double.parse(data['longitude'].toString()),
-        range: int.parse(data['range'].toString() ?? '0'));
+        range: int.parse(data['rangeKm'].toString()));
   }
 
   Future<void> insertVol(Volunteer vol) async {
@@ -74,23 +78,18 @@ class Volunteer {
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
       bool success = responseJson['message'] == 'Login Success';
-      var data = responseJson['data'] ??
-          {
-            'name': 'Daniyal Dolare',
-            'number': 7894561230,
-            'email': 'daniyal.dolare@gmail.com',
-            'gender': 'Male',
-            'range': 2
-          };
+      var data = responseJson['data'];
       if (success) {
         print('login succcess');
         print('vol data from response: $data');
         var pref = await SharedPreferences.getInstance();
         pref.setBool('loggedIn', true);
+        pref.setBool(
+            'visited', true); //set onboarding screen to visited on login
         if (data != null) {
           Volunteer vol = Volunteer().fromMap(data);
-          vol.insertVol(vol);
-          return {'success': success, 'data': vol};
+          vol.insertVol(vol); //insert into database
+          return {'success': success};
         }
       }
     }

@@ -68,7 +68,6 @@ class _FoodRequestsState extends State<FoodRequests> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               vol = snapshot.data;
-
               return FutureBuilder(
                   future: getDonationRequests(),
                   builder: (context, snapshot) {
@@ -79,18 +78,23 @@ class _FoodRequestsState extends State<FoodRequests> {
                           child: Text('No Food Requests'),
                         );
                       else
-                        return ListView.builder(
-                            itemCount: donations.length,
-                            itemBuilder: (context, index) => ListTile(
-                                  title: Text(donations[index].name),
-                                  subtitle: Text(donations[index].food.type),
-                                  trailing: Icon(Icons.arrow_forward_ios),
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, 'detailedFoodRequest',
-                                        arguments: {'data': donations[index]});
-                                  },
-                                ));
+                        return RefreshIndicator(
+                          onRefresh: getDonationRequests,
+                          child: ListView.builder(
+                              itemCount: donations.length,
+                              itemBuilder: (context, index) => ListTile(
+                                    title: Text(donations[index].name),
+                                    subtitle: Text(donations[index].food.type),
+                                    trailing: Icon(Icons.arrow_forward_ios),
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, 'detailedFoodRequest',
+                                          arguments: {
+                                            'data': donations[index]
+                                          });
+                                    },
+                                  )),
+                        );
                     }
                     return Center(
                       child: CircularProgressIndicator(),
@@ -108,9 +112,7 @@ class _FoodRequestsState extends State<FoodRequests> {
 
   Future<List<Donation>> getDonationRequests() async {
     final Map<String, dynamic> param = {
-      'longitude': vol.longitude.toString(),
-      'latitude': vol.latitude.toString(),
-      'range': 5.toString()
+      'vol_id': vol.id.toString(),
     };
     final url = Uri.https('pure-mountain-72218.herokuapp.com',
         'api/getDonationRequests.php', param);
@@ -138,12 +140,14 @@ class _FoodRequestsState extends State<FoodRequests> {
           havePackets: int.parse(foodData['havePackets']));
 
       donation = Donation(
+          id: int.parse(data['donation']['donation_id']),
           name: data['donation']['name'],
           number: int.parse(data['donation']['number']),
           email: data['donation']['email'],
           latitude: double.parse(data['donation']['latitude']),
           longitude: double.parse(data['donation']['longitude']),
           time: DateTime.parse(data['donation']['time']),
+          isAccepted: int.parse(data['donation']['accepted']),
           food: food);
       donations.add(donation);
     }

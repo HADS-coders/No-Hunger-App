@@ -108,8 +108,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               if (_formKey.currentState.validate())
                                 Navigator.pushNamedAndRemoveUntil(
-                                    context, 'foodRequests', (route) => false,
-                                    arguments: {'data': message['data']});
+                                  context,
+                                  'foodRequests',
+                                  (route) => false,
+                                );
                               else
                                 isCorrect = !isCorrect;
                             }
