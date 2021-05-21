@@ -5,6 +5,7 @@ import 'package:NoHunger/models/foodItem.dart';
 import 'package:NoHunger/models/volunteer.dart';
 import 'package:NoHunger/widgets/donateDialog.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -86,12 +87,20 @@ class _FoodRequestsState extends State<FoodRequests> {
                                     title: Text(donations[index].name),
                                     subtitle: Text(donations[index].food.type),
                                     trailing: Icon(Icons.arrow_forward_ios),
-                                    onTap: () {
-                                      Navigator.pushNamed(
+                                    onTap: () async {
+                                      var result = await Navigator.pushNamed(
                                           context, 'detailedFoodRequest',
                                           arguments: {
                                             'data': donations[index]
-                                          });
+                                          }) as List;
+                                      if (result != null) {
+                                        print('donation completed');
+                                        setState(() {
+                                          donations.removeAt(index);
+                                        });
+                                        Fluttertoast.showToast(
+                                            msg: "Food Request Completed!");
+                                      }
                                     },
                                   )),
                         );

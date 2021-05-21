@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:NoHunger/models/donation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class DetailedFoodRequest extends StatefulWidget {
   @override
@@ -9,6 +13,7 @@ class DetailedFoodRequest extends StatefulWidget {
 
 class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
   Donation donation;
+  TextStyle _style = TextStyle(fontSize: 25.0);
   @override
   Widget build(BuildContext context) {
     Map arg = ModalRoute.of(context).settings.arguments as Map;
@@ -25,11 +30,14 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text('Name: ${donation.name}'),
+              child: Text(
+                'Name: ${donation.name}',
+                style: _style,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text('Food Type: ${donation.food.type}'),
+              child: Text('Food Type: ${donation.food.type}', style: _style),
             ),
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
@@ -41,15 +49,23 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                        'Food Name: ${donation.food.foodItems[index].name}'),
+                        'Food Name: ${donation.food.foodItems[index].name}',
+                        style: _style),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                        'Food amount: ${donation.food.foodItems[index].amount.toString()}'),
+                        'Food amount: ${donation.food.foodItems[index].amount.toString()}',
+                        style: _style),
                   ),
                 ],
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                  'Have packets: ${donation.food.havePackets == 1 ? 'Yes' : 'No'}',
+                  style: _style),
             ),
             Row(
               children: [
@@ -69,7 +85,58 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
                       sendMail();
                     })
               ],
-            )
+            ),
+            Spacer(),
+            Container(
+                margin: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 20.0),
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (donation.isAccepted == 0) {
+                      //update to accepted in db
+                      final url = Uri.https('pure-mountain-72218.herokuapp.com',
+                          'api/updateDonationRequest.php');
+                      final headers = {
+                        HttpHeaders.contentTypeHeader: 'application/json'
+                      };
+                      final body =
+                          jsonEncode({"donation_id": donation.id.toString()});
+                      final response =
+                          await http.put(url, headers: headers, body: body);
+                      var responsebody = json.decode(response.body);
+                      if (responsebody['message'] == 'success') {
+                        Fluttertoast.showToast(
+                            msg: "Donation Request Accepted!");
+                        setState(() {
+                          donation.isAccepted = 1;
+                        });
+                      }
+                    } else {
+                      //move donation to completed donation in db
+                      final url = Uri.https('pure-mountain-72218.herokuapp.com',
+                          'api/completeDonationRequest.php');
+                      final headers = {
+                        HttpHeaders.contentTypeHeader: 'application/json'
+                      };
+                      final body =
+                          jsonEncode({"donation_id": donation.id.toString()});
+                      final response =
+                          await http.delete(url, headers: headers, body: body);
+                      var responsebody = json.decode(response.body);
+                      if (responsebody['message'] == 'success') {
+                        Navigator.pop(context, [true]);
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "Network error,try again later!");
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  child:
+                      Text(donation.isAccepted == 0 ? 'Accept' : 'Completed'),
+                ))
           ],
         ),
       ),
@@ -99,7 +166,6 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
   }
 
   sendMail() async {
-    // Android and iOS
     final uri =
         'mailto:${donation.email}?subject=Food Donation Request Accepted&body=';
     if (await canLaunch(uri)) {
