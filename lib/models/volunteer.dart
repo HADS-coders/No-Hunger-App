@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:NoHunger/services/db.dart';
 import 'package:http/http.dart' as http;
@@ -6,15 +7,15 @@ import 'package:sqflite/sqlite_api.dart';
 
 class Volunteer {
   final String table = 'vol';
-  int id;
-  String name;
-  int number;
-  String email;
-  String password;
-  String gender;
-  double latitude;
-  double longitude;
-  int range;
+  int? id;
+  String? name;
+  int? number;
+  String? email;
+  String? password;
+  String? gender;
+  double? latitude;
+  double? longitude;
+  int? range;
 
   Volunteer(
       {this.id,
@@ -50,21 +51,19 @@ class Volunteer {
   }
 
   Future<void> insertVol(Volunteer vol) async {
-    final Database db = await Db.getDatabase();
+    final Database? db = await Db.getDatabase();
 
-    await db.insert('vol', vol.toMap(),
+    await db!.insert('vol', vol.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<Volunteer> getVol() async {
-    final Database db = await Db.getDatabase();
-    var result = await db.query(table); //same as select * from table
-    if (result != null) {
-      print('Vol from db: $result');
-      var vol = Volunteer().fromMap(result[0]);
-      return vol;
-    } else
-      return null;
+    final Database? db = await Db.getDatabase();
+    List? result = await db!.query(table); //same as select * from table
+    print('Vol from db: $result');
+
+    Volunteer vol = Volunteer().fromMap(result[0]!);
+    return vol;
   }
 
   static Future<dynamic> login(String email, String password) async {
@@ -97,7 +96,7 @@ class Volunteer {
   }
 
   static void logout() async {
-    final Database db = await Db.getDatabase();
+    final Database db = await (Db.getDatabase() as FutureOr<Database>);
     await db.delete('vol');
 
     var pref = await SharedPreferences.getInstance();

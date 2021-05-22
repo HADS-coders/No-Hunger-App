@@ -12,12 +12,14 @@ class DetailedFoodRequest extends StatefulWidget {
 }
 
 class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
-  Donation donation;
+  Donation? donation;
+  late final int? volId;
   TextStyle _style = TextStyle(fontSize: 25.0);
   @override
   Widget build(BuildContext context) {
-    Map arg = ModalRoute.of(context).settings.arguments as Map;
+    Map arg = ModalRoute.of(context)!.settings.arguments as Map;
     donation = arg['data'];
+    volId = arg['vol_id'];
     return Scaffold(
       appBar: AppBar(
         title: Text('Food Request Details'),
@@ -31,31 +33,31 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Name: ${donation.name}',
+                'Name: ${donation!.name}',
                 style: _style,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text('Food Type: ${donation.food.type}', style: _style),
+              child: Text('Food Type: ${donation!.food!.type}', style: _style),
             ),
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: donation.food.foodItems.length,
+              itemCount: donation!.food!.foodItems!.length,
               itemBuilder: (context, index) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                        'Food Name: ${donation.food.foodItems[index].name}',
+                        'Food Name: ${donation!.food!.foodItems![index].name}',
                         style: _style),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                        'Food amount: ${donation.food.foodItems[index].amount.toString()}',
+                        'Food amount: ${donation!.food!.foodItems![index].amount.toString()}',
                         style: _style),
                   ),
                 ],
@@ -64,7 +66,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                  'Have packets: ${donation.food.havePackets == 1 ? 'Yes' : 'No'}',
+                  'Have packets: ${donation!.food!.havePackets == 1 ? 'Yes' : 'No'}',
                   style: _style),
             ),
             Row(
@@ -92,15 +94,17 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (donation.isAccepted == 0) {
+                    if (donation!.isAccepted == 0) {
                       //update to accepted in db
                       final url = Uri.https('pure-mountain-72218.herokuapp.com',
                           'api/updateDonationRequest.php');
                       final headers = {
                         HttpHeaders.contentTypeHeader: 'application/json'
                       };
-                      final body =
-                          jsonEncode({"donation_id": donation.id.toString()});
+                      final body = jsonEncode({
+                        "donation_id": donation!.id.toString(),
+                        "vol_id": volId!.toString()
+                      });
                       final response =
                           await http.put(url, headers: headers, body: body);
                       var responsebody = json.decode(response.body);
@@ -108,7 +112,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
                         Fluttertoast.showToast(
                             msg: "Donation Request Accepted!");
                         setState(() {
-                          donation.isAccepted = 1;
+                          donation!.isAccepted = 1;
                         });
                       }
                     } else {
@@ -119,7 +123,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
                         HttpHeaders.contentTypeHeader: 'application/json'
                       };
                       final body =
-                          jsonEncode({"donation_id": donation.id.toString()});
+                          jsonEncode({"donation_id": donation!.id.toString()});
                       final response =
                           await http.delete(url, headers: headers, body: body);
                       var responsebody = json.decode(response.body);
@@ -135,7 +139,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20))),
                   child:
-                      Text(donation.isAccepted == 0 ? 'Accept' : 'Completed'),
+                      Text(donation!.isAccepted == 0 ? 'Accept' : 'Completed'),
                 ))
           ],
         ),
@@ -145,7 +149,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
 
   launchMap() async {
     final String googleMapslocationUrl =
-        "https://www.google.com/maps/search/?api=1&query=${donation.latitude},${donation.longitude}";
+        "https://www.google.com/maps/search/?api=1&query=${donation!.latitude},${donation!.longitude}";
 
     final String encodedURl = Uri.encodeFull(googleMapslocationUrl);
 
@@ -157,7 +161,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
   }
 
   launchDialer() async {
-    final url = 'tel:${donation.number}';
+    final url = 'tel:${donation!.number}';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -167,7 +171,7 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
 
   sendMail() async {
     final uri =
-        'mailto:${donation.email}?subject=Food Donation Request Accepted&body=';
+        'mailto:${donation!.email}?subject=Food Donation Request Accepted&body=';
     if (await canLaunch(uri)) {
       await launch(uri);
     } else {

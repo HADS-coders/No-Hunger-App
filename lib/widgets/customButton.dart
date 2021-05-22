@@ -2,11 +2,11 @@ import 'package:NoHunger/constants.dart';
 import 'package:flutter/material.dart';
 
 Widget customCircularButton(
-    {BuildContext context,
-    String title,
-    String subTitle,
-    String img,
-    void Function() onTap}) {
+    {required BuildContext context,
+    required String title,
+    required String subTitle,
+    required String img,
+    void Function()? onTap}) {
   return Expanded(
     child: Column(
       mainAxisSize: MainAxisSize.min,

@@ -15,16 +15,16 @@ class FoodRequests extends StatefulWidget {
 }
 
 class _FoodRequestsState extends State<FoodRequests> {
-  Volunteer vol = Volunteer();
+  Volunteer? vol = Volunteer();
   List<Map<String, dynamic>> drawerItems = [
     {'name': 'Donate', 'routeName': null},
     {'name': 'Profile', 'routeName': 'volunteerProfile'},
     {'name': 'Requests History', 'routeName': 'requestsHistory'},
   ];
-  List<Donation> donations = [];
+  List<Donation>? donations = [];
 
   Future<Volunteer> getVolFromDb() async {
-    var _vol = await vol.getVol();
+    Volunteer _vol = await Volunteer().getVol();
     return _vol;
   }
 
@@ -68,13 +68,13 @@ class _FoodRequestsState extends State<FoodRequests> {
           future: getVolFromDb(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              vol = snapshot.data;
+              vol = snapshot.data! as Volunteer?;
               return FutureBuilder(
                   future: getDonationRequests(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      donations = snapshot.data;
-                      if (donations.isEmpty)
+                      donations = snapshot.data as List<Donation>?;
+                      if (donations!.isEmpty)
                         return Center(
                           child: Text('No Food Requests'),
                         );
@@ -82,21 +82,23 @@ class _FoodRequestsState extends State<FoodRequests> {
                         return RefreshIndicator(
                           onRefresh: getDonationRequests,
                           child: ListView.builder(
-                              itemCount: donations.length,
+                              itemCount: donations!.length,
                               itemBuilder: (context, index) => ListTile(
-                                    title: Text(donations[index].name),
-                                    subtitle: Text(donations[index].food.type),
+                                    title: Text(donations![index].name!),
+                                    subtitle:
+                                        Text(donations![index].food!.type!),
                                     trailing: Icon(Icons.arrow_forward_ios),
                                     onTap: () async {
                                       var result = await Navigator.pushNamed(
                                           context, 'detailedFoodRequest',
                                           arguments: {
-                                            'data': donations[index]
-                                          }) as List;
+                                            'data': donations![index],
+                                            'vol_id': vol!.id
+                                          }) as List?;
                                       if (result != null) {
                                         print('donation completed');
                                         setState(() {
-                                          donations.removeAt(index);
+                                          donations!.removeAt(index);
                                         });
                                         Fluttertoast.showToast(
                                             msg: "Food Request Completed!");
@@ -119,46 +121,25 @@ class _FoodRequestsState extends State<FoodRequests> {
     );
   }
 
-  Future<List<Donation>> getDonationRequests() async {
+  Future<List<Donation>?> getDonationRequests() async {
     final Map<String, dynamic> param = {
-      'vol_id': vol.id.toString(),
+      'vol_id': vol!.id.toString(),
     };
     final url = Uri.https('pure-mountain-72218.herokuapp.com',
         'api/getDonationRequests.php', param);
     final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
     final response = await http.get(url, headers: headers);
-    var responsebody = json.decode(response.body);
-    var dataList = responsebody['data'] as List;
+    Map<String, dynamic> responsebody = json.decode(response.body);
+    List<dynamic> dataList = responsebody['data'];
     donations = [];
     Donation donation = Donation();
-    Food food = Food();
-    for (var data in dataList) {
-      List<FoodItem> foodItems = [];
-      List foodItemsData = data['foodItems'];
-      for (var item in foodItemsData) {
-        FoodItem foodItem =
-            FoodItem(name: item['name'], amount: int.parse(item['amount']));
-        foodItems.add(foodItem);
-      }
-
-      var foodData = data['food'];
-      food = Food(
-          type: foodData['type'],
-          foodItems: foodItems,
-          time: foodData['time'],
-          havePackets: int.parse(foodData['havePackets']));
-
-      donation = Donation(
-          id: int.parse(data['donation']['donation_id']),
-          name: data['donation']['name'],
-          number: int.parse(data['donation']['number']),
-          email: data['donation']['email'],
-          latitude: double.parse(data['donation']['latitude']),
-          longitude: double.parse(data['donation']['longitude']),
-          time: DateTime.parse(data['donation']['time']),
-          isAccepted: int.parse(data['donation']['accepted']),
-          food: food);
-      donations.add(donation);
+    for (Map<String, dynamic> data in dataList) {
+      var donationMap = data['donation'];
+      donationMap.putIfAbsent('food', () => data['food']);
+      Map foodMap = donationMap['food'];
+      foodMap.putIfAbsent('foodItems', () => data['foodItems']);
+      donation = Donation.fromMap(donationMap);
+      donations!.add(donation);
     }
     return donations;
   }

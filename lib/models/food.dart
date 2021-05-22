@@ -1,27 +1,27 @@
 import 'package:NoHunger/models/foodItem.dart';
 
 class Food {
-  final String type;
-  final List<FoodItem> foodItems;
-  String time;
-  final int havePackets;
+  final String? type;
+  final List<FoodItem>? foodItems;
+  String? time;
+  final int? havePackets;
 
   Food({this.type, this.foodItems, this.time, this.havePackets});
 
   Map<String, dynamic> toMap() {
     return {
       'type': type,
-      'foodItems': foodItemsToMap(foodItems),
+      'foodItems': FoodItem.foodItemsToMap(foodItems!),
       'time': time,
       'havePackets': havePackets
     };
   }
 
-  List<Map<String, dynamic>> foodItemsToMap(List<FoodItem> foodItems) {
-    List<Map<String, dynamic>> foodItemMapList = [];
-    foodItems.forEach((element) {
-      foodItemMapList.add(element.toMap());
-    });
-    return foodItemMapList;
+  static Food fromMap(Map map) {
+    return Food(
+        type: map['type'],
+        foodItems: FoodItem.foodItemsFromList(map['foodItems']),
+        time: map['time'],
+        havePackets: int.parse(map['havePackets'].toString()));
   }
 }

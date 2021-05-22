@@ -51,9 +51,9 @@ class _OnBoardingState extends State<OnBoarding> {
                   itemBuilder: (context, index) => Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Image.asset(boardings[index]['title']),
+                      Image.asset(boardings[index]['title']!),
                       Text(
-                        boardings[index]['text'],
+                        boardings[index]['text']!,
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(
@@ -61,7 +61,7 @@ class _OnBoardingState extends State<OnBoarding> {
                       ),
                       Expanded(
                         child: Image.asset(
-                          boardings[index]['img'],
+                          boardings[index]['img']!,
                           width: screenWidth(context) - 20,
                         ),
                       ),

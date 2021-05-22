@@ -10,9 +10,9 @@ class AddDonationAmount extends StatefulWidget {
 class _AddDonationAmountState extends State<AddDonationAmount> {
   double min = 100.0, max = 10000.0;
   int incr = 100, factor = 3;
-  double _value, _prevValue, amount;
-  double width, height;
-  bool isPressed;
+  double? _value, _prevValue, amount;
+  double? width, height;
+  bool? isPressed;
   List<Widget> stackElements = [];
   var _formKey = GlobalKey<FormState>();
   TextEditingController _amountController = TextEditingController();
@@ -39,7 +39,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       width = screenWidth(context) -
           (MediaQuery.of(context).padding.left +
               MediaQuery.of(context).padding.right);
@@ -81,19 +81,20 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                         IconButton(
                           icon: Icon(CupertinoIcons.minus),
                           onPressed: () {
-                            if (_value > min) {
+                            if (_value! > min) {
                               setState(() {
-                                _value -= incr;
+                                _value = _value! - incr;
                                 amount = _value;
                                 updateAmount();
 
-                                var n = _value ~/ (incr * factor);
+                                var n = _value! ~/ (incr * factor);
                                 if (n <= eleLength &&
                                     stackElements.length <= stackLength) {
                                   for (var i = stackElements.length - 4;
                                       i > n;
                                       i--) {
-                                    stackElements.removeAt(elements[i]['posi']);
+                                    stackElements
+                                        .removeAt(elements[i]!['posi'] as int);
                                   }
                                 }
                                 _prevValue = _value;
@@ -103,7 +104,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                         ),
                         Expanded(
                           child: Slider(
-                            value: _value,
+                            value: _value!,
                             divisions: 100,
                             inactiveColor: Colors.grey,
                             onChanged: (value) {
@@ -111,8 +112,8 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                                 _value = (value ~/ incr) * incr.toDouble();
                                 amount = _value;
                                 updateAmount();
-                                var n = _value ~/ (incr * factor);
-                                if (_value > _prevValue) {
+                                var n = _value! ~/ (incr * factor);
+                                if (_value! > _prevValue!) {
                                   if (n <= eleLength &&
                                       stackElements.length <= stackLength) {
                                     for (var i = stackElements.length - 3;
@@ -135,8 +136,8 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                                     for (var i = stackElements.length - 4;
                                         i > n;
                                         i--) {
-                                      stackElements
-                                          .removeAt(elements[i]['posi']);
+                                      stackElements.removeAt(
+                                          elements[i]!['posi'] as int);
                                     }
                                   }
                                 }
@@ -150,12 +151,12 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                         IconButton(
                           icon: Icon(Icons.add),
                           onPressed: () {
-                            if (_value < max) {
+                            if (_value! < max) {
                               setState(() {
-                                _value += incr;
+                                _value = _value! + incr;
                                 amount = _value;
                                 updateAmount();
-                                var n = _value ~/ (incr * factor);
+                                var n = _value! ~/ (incr * factor);
                                 if (n <= eleLength &&
                                     stackElements.length <= stackLength) {
                                   for (var i = stackElements.length - 3;
@@ -183,8 +184,8 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                               borderRadius: BorderRadius.circular(30)),
                         ),
                         child: Text(
-                          "Give ${amount ~/ incr} " +
-                              (_value <= 100 ? "meal" : "meals"),
+                          "Give ${amount! ~/ incr} " +
+                              (_value! <= 100 ? "meal" : "meals"),
                           style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
@@ -207,12 +208,12 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
     stackElements.insert(
       element['posi'],
       Positioned(
-        top: height * element['top'],
-        left: width * element['left'],
+        top: height! * element['top'],
+        left: width! * element['left'],
         child: Image.asset(
           'assets/images/${element['name']}.png',
-          width: width * 0.4,
-          height: width * 0.4,
+          width: width! * 0.4,
+          height: width! * 0.4,
         ),
       ),
     );
@@ -266,7 +267,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                           borderRadius: BorderRadius.circular(30)),
                     ),
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         Navigator.pop(context);
 
                         setState(() {
@@ -274,12 +275,12 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                               (double.parse(_amountController.text) ~/ incr) *
                                   incr.toDouble();
                           amount = _value;
-                          if (amount > max) {
+                          if (amount! > max) {
                             _value = max;
                           }
                           updateAmount();
-                          var n = _value ~/ (incr * factor);
-                          if (_value > _prevValue) {
+                          var n = _value! ~/ (incr * factor);
+                          if (_value! > _prevValue!) {
                             if (n <= eleLength &&
                                 stackElements.length <= stackLength) {
                               for (var i = stackElements.length - 3;
@@ -301,7 +302,8 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
                               for (var i = stackElements.length - 4;
                                   i > n;
                                   i--) {
-                                stackElements.removeAt(elements[i]['posi']);
+                                stackElements
+                                    .removeAt(elements[i]!['posi'] as int);
                               }
                             }
                           }
@@ -317,7 +319,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
   }
 
   Widget _buildAmountText() => Positioned(
-        top: height * 0.1,
+        top: height! * 0.1,
         width: width,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -347,7 +349,7 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
     stackElements.add(_buildAmountText());
     stackElements.add(
       Positioned(
-        top: height * 0.2,
+        top: height! * 0.2,
         width: width,
         height: width,
         child: Image.asset('assets/images/box back.png'),
@@ -355,17 +357,17 @@ class _AddDonationAmountState extends State<AddDonationAmount> {
     );
     stackElements.add(
       Positioned(
-          top: height * 0.35,
-          left: width * 0.35,
+          top: height! * 0.35,
+          left: width! * 0.35,
           child: Image.asset(
             'assets/images/watermelon.png',
-            width: width * 0.4,
-            height: width * 0.4,
+            width: width! * 0.4,
+            height: width! * 0.4,
           )),
     );
     stackElements.add(
       Positioned(
-        top: height * 0.2 + 2,
+        top: height! * 0.2 + 2,
         width: width,
         height: width,
         child: Image.asset('assets/images/box front.png'),

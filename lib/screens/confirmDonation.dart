@@ -8,7 +8,7 @@ class ConfirmDonation extends StatefulWidget {
 }
 
 class _ConfirmDonationState extends State<ConfirmDonation> {
-  double amount;
+  double? amount;
   TextEditingController name = TextEditingController();
   TextEditingController number = TextEditingController();
   TextEditingController email = TextEditingController();
@@ -16,7 +16,7 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
 
   @override
   Widget build(BuildContext context) {
-    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+    final Map? arguments = ModalRoute.of(context)!.settings.arguments as Map?;
     if (arguments != null) {
       amount = arguments['data'];
     }
@@ -51,7 +51,7 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
                 TextFormField(
                   controller: name,
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return "Name cannot be empty";
                     } else {
                       return null;
@@ -65,7 +65,7 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
                 TextFormField(
                   controller: number,
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return "Mobile Number cannot be empty";
                     } else {
                       return null;
@@ -79,7 +79,7 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
                 TextFormField(
                   controller: email,
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return "Email cannot be empty";
                     } else if (!value.contains('@') && !value.contains('.')) {
                       return 'Email is not valid';
@@ -100,7 +100,7 @@ class _ConfirmDonationState extends State<ConfirmDonation> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30))),
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           Navigator.pushNamed(
                               context, 'moneyDonationCompleted');
                         }

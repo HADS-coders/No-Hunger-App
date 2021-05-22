@@ -7,10 +7,10 @@ class VolunteerProfile extends StatefulWidget {
 }
 
 class _VolunteerProfileState extends State<VolunteerProfile> {
-  Volunteer vol;
+  Volunteer? vol;
   @override
   Widget build(BuildContext context) {
-    var arg = ModalRoute.of(context).settings.arguments as Map;
+    var arg = ModalRoute.of(context)!.settings.arguments as Map?;
     if (arg != null) vol = arg['data'];
     return Scaffold(
       body: SafeArea(

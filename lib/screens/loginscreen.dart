@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
 
   ///Check if password correct or not
-  bool isCorrect = true;
+  bool? isCorrect = true;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _email,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return "Email cannot be empty";
                           } else if (!value.contains('@') &&
                               !value.contains('.')) {
@@ -64,9 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _password,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return "Password cannot be empty";
-                          } else if (!isCorrect)
+                          } else if (!isCorrect!)
                             return "Incorrect password";
                           else {
                             return null;
@@ -99,21 +99,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(30)),
                           ),
                           onPressed: () async {
-                            if (_formKey.currentState.validate()) {
+                            if (_formKey.currentState!.validate()) {
                               print('validated');
                               var message = await getFutureData(context,
                                   Volunteer.login(_email.text, _password.text));
 
                               isCorrect = message['success'];
 
-                              if (_formKey.currentState.validate())
+                              if (_formKey.currentState!.validate())
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
                                   'foodRequests',
                                   (route) => false,
                                 );
                               else
-                                isCorrect = !isCorrect;
+                                isCorrect = !isCorrect!;
                             }
                           },
                           child: Text('Login'),

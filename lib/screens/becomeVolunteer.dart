@@ -53,7 +53,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                     TextFormField(
                       controller: fName,
                       validator: (value) {
-                        if (value.isEmpty)
+                        if (value!.isEmpty)
                           return "First Name cannot be empty";
                         else
                           return null;
@@ -67,7 +67,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                     TextFormField(
                       controller: lName,
                       validator: (value) {
-                        if (value.isEmpty)
+                        if (value!.isEmpty)
                           return "Last Name cannot be empty";
                         else
                           return null;
@@ -81,7 +81,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                     TextFormField(
                       controller: number,
                       validator: (value) {
-                        if (value.isEmpty)
+                        if (value!.isEmpty)
                           return "Mobile Number cannot be empty";
                         else
                           return null;
@@ -95,7 +95,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                     TextFormField(
                       controller: email,
                       validator: (value) {
-                        if (value.isEmpty)
+                        if (value!.isEmpty)
                           return "Email cannot be empty";
                         else if (!value.contains('@') && !value.contains('.')) {
                           return 'Email is not valid';
@@ -125,7 +125,7 @@ class _BecomeVolunteerState extends State<BecomeVolunteer> {
                                   borderRadius: BorderRadius.circular(30)),
                             ),
                             onPressed: () {
-                              if (_formKey.currentState.validate()) {
+                              if (_formKey.currentState!.validate()) {
                                 print('validated');
                                 _submittedDialog(email.text.toString());
                               }

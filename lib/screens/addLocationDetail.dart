@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:NoHunger/models/donation.dart';
@@ -13,9 +14,9 @@ class AddLocationDetail extends StatefulWidget {
 }
 
 class _AddLocationDetailState extends State<AddLocationDetail> {
-  Food food;
-  Position location;
-  var _selectedType = 'set';
+  Food? food;
+  Position? location;
+  String? _selectedType = 'set';
   var _formKey = GlobalKey<FormState>();
   TextEditingController name = TextEditingController();
   TextEditingController number = TextEditingController();
@@ -26,7 +27,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
 
   @override
   Widget build(BuildContext context) {
-    Map arg = ModalRoute.of(context).settings.arguments as Map;
+    Map? arg = ModalRoute.of(context)!.settings.arguments as Map?;
     if (arg != null) food = arg['data'];
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -45,7 +46,8 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                 children: [
                   InkWell(
                     onTap: () async {
-                      Position _location = await _determinePosition();
+                      Position _location =
+                          await (_determinePosition() as FutureOr<Position>);
                       print('${_location.latitude}  ${_location.longitude}');
                       setState(() {
                         _selectedType = 'get';
@@ -57,7 +59,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                       trailing: Radio(
                           value: 'get',
                           groupValue: _selectedType,
-                          onChanged: (value) {
+                          onChanged: (dynamic value) {
                             setState(() {
                               _selectedType = value;
                               _determinePosition();
@@ -76,7 +78,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                       trailing: Radio(
                           value: 'set',
                           groupValue: _selectedType,
-                          onChanged: (value) {
+                          onChanged: (dynamic value) {
                             setState(() {
                               _selectedType = value;
                             });
@@ -86,7 +88,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                   TextFormField(
                     controller: name,
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value!.isEmpty) {
                         return "Name cannot be empty";
                       } else {
                         return null;
@@ -100,7 +102,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                   TextFormField(
                     controller: number,
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value!.isEmpty) {
                         return "Mobile Number cannot be empty";
                       } else {
                         return null;
@@ -114,7 +116,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                   TextFormField(
                     controller: email,
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value!.isEmpty) {
                         return "Email cannot be empty";
                       } else if (!value.contains('@') && !value.contains('.')) {
                         return 'Email is not valid';
@@ -131,7 +133,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                     TextFormField(
                       controller: address,
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value!.isEmpty) {
                           return "Address cannot be empty";
                         } else {
                           return null;
@@ -145,7 +147,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                     TextFormField(
                       controller: city,
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value!.isEmpty) {
                           return "City cannot be empty";
                         } else {
                           return null;
@@ -159,7 +161,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                     TextFormField(
                       controller: pincode,
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value!.isEmpty) {
                           return "Pin Code cannot be empty";
                         } else {
                           return null;
@@ -181,7 +183,7 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30))),
                         onPressed: () async {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey.currentState!.validate()) {
                             Donation donation;
                             if (_selectedType == 'set') {
                               List<Location> locations = await GeocodingPlatform
@@ -196,26 +198,28 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                                   latitude: setLocation.latitude,
                                   longitude: setLocation.longitude,
                                   food: food,
-                                  time: DateTime.now());
+                                  time: DateTime.now(),
+                                  isAccepted: 0);
                             } else {
                               donation = Donation(
                                   name: name.text,
                                   number: int.parse(number.text),
                                   email: email.text,
-                                  latitude: location.latitude,
-                                  longitude: location.longitude,
+                                  latitude: location!.latitude,
+                                  longitude: location!.longitude,
                                   food: food,
-                                  time: DateTime.now());
+                                  time: DateTime.now(),
+                                  isAccepted: 0);
                             }
                             // print(donation.toMap());
 
-                            bool donationSuccessful = await getFutureData(
-                                context, sendDonationRequest(donation));
+                            bool donationSuccessful = await (getFutureData(
+                                    context, sendDonationRequest(donation))
+                                as FutureOr<bool>);
 
                             if (donationSuccessful)
                               Navigator.pushNamed(
-                                  context, 'foodDonationCompleted',
-                                  arguments: {'data': donation});
+                                  context, 'foodDonationCompleted');
                             else
                               showDialog(
                                   context: context,
@@ -279,10 +283,10 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
             ));
   }
 
-  Future<Position> _determinePosition() async {
+  Future<Position?> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
-    Position currentPosition;
+    Position? currentPosition;
 
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -316,8 +320,9 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
 
-    currentPosition = await getFutureData(context,
-        Geolocator.getCurrentPosition(timeLimit: Duration(seconds: 100)));
+    currentPosition = await (getFutureData(context,
+            Geolocator.getCurrentPosition(timeLimit: Duration(seconds: 100)))
+        as FutureOr<Position?>);
 
     setState(() {
       location = currentPosition;

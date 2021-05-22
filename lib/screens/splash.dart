@@ -8,8 +8,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool _visited;
-  bool _loggedIn;
+  late final bool _visited;
+  late final bool _loggedIn;
   @override
   void initState() {
     super.initState();
@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
               TweenAnimationBuilder(
                 tween: Tween<double>(begin: 0, end: screenWidth(context) / 2),
                 duration: Duration(seconds: 2),
-                builder: (context, value, child) => Column(
+                builder: (context, dynamic value, child) => Column(
                   children: [
                     Container(
                       width: screenWidth(context) / 2,

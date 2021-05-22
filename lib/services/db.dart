@@ -6,9 +6,9 @@ class Db {
   static final _dbName = 'nohungerdb.db';
   static final _dbVersion = 1;
 
-  static Database _database;
+  static Database? _database;
 
-  static Future<Database> getDatabase() async {
+  static Future<Database?> getDatabase() async {
     if (_database != null) return _database;
     _database = await createDatabase();
     return _database;

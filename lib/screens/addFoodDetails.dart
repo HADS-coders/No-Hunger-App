@@ -13,7 +13,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
   TextEditingController time = TextEditingController();
   var _foodItemEntries = [];
   var _foodItemMap = {};
-  var havePackets = 'No';
+  String? havePackets = 'No';
   var foodTypeMap = {
     'Cooked Food': {
       'validateStr': 'Amount cannot be empty',
@@ -53,7 +53,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
                               ))
                           .toList(),
                       hint: Text('Select Food type'),
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         setState(() {
                           _foodType = value;
                           _foodItemEntries = [];
@@ -83,7 +83,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
           showCursor: true,
           controller: time,
           validator: (value) {
-            if (value.isEmpty) {
+            if (value!.isEmpty) {
               return "Cooking time cannot be empty";
             } else {
               return null;
@@ -97,11 +97,11 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
             var selectedTime = await showTimePicker(
                 context: context, initialTime: TimeOfDay.now());
             setState(() {
-              time.text = _formatTime(selectedTime);
+              time.text = _formatTime(selectedTime!);
             });
           },
         ),
-      for (Widget item in _foodItemEntries) item,
+      for (Widget item in _foodItemEntries as Iterable<Widget>) item,
       TextButton(
           onPressed: () {
             setState(() {
@@ -122,7 +122,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
           Radio(
               value: 'Yes',
               groupValue: havePackets,
-              onChanged: (value) {
+              onChanged: (dynamic value) {
                 setState(() {
                   havePackets = value;
                 });
@@ -131,7 +131,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
           Radio(
               value: 'No',
               groupValue: havePackets,
-              onChanged: (value) {
+              onChanged: (dynamic value) {
                 setState(() {
                   havePackets = value;
                 });
@@ -148,7 +148,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30))),
             onPressed: () {
-              if (_formKey.currentState.validate()) {
+              if (_formKey.currentState!.validate()) {
                 List<FoodItem> foodItems = [];
                 _foodItemMap.forEach((key, value) {
                   FoodItem foodItem = FoodItem(
@@ -160,7 +160,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
                 Food food = Food(
                     type: _foodType,
                     foodItems: foodItems,
-                    time: time.text ?? null,
+                    time: time.text,
                     havePackets: havePackets == 'Yes' ? 1 : 0);
 
                 Navigator.pushNamed(context, 'addLocation',
@@ -172,7 +172,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
     ];
   }
 
-  List<Widget> foodItemWidget(int index, String foodType) {
+  List<Widget> foodItemWidget(int index, String? foodType) {
     return [
       Padding(
         padding: const EdgeInsets.all(10.0),
@@ -180,7 +180,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
       ),
       TextFormField(
         validator: (value) {
-          if (value.isEmpty) {
+          if (value!.isEmpty) {
             return "Item name cannot be empty";
           } else {
             return null;
@@ -196,15 +196,15 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
       ),
       TextFormField(
         validator: (value) {
-          if (value.isEmpty) {
-            return foodTypeMap[foodType]['validateStr'];
+          if (value!.isEmpty) {
+            return foodTypeMap[foodType!]!['validateStr'];
           } else {
             return null;
           }
         },
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          hintText: foodTypeMap[foodType]['hintText'],
+          hintText: foodTypeMap[foodType!]!['hintText'],
         ),
         onChanged: (value) {
           _foodItemMap[index]['amount'] = value;
