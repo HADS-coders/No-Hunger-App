@@ -13,8 +13,7 @@ class DetailedFoodRequest extends StatefulWidget {
 
 class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
   Donation? donation;
-  late final int? volId;
-  TextStyle _style = TextStyle(fontSize: 25.0);
+  int? volId;
   @override
   Widget build(BuildContext context) {
     Map arg = ModalRoute.of(context)!.settings.arguments as Map;
@@ -27,121 +26,123 @@ class _DetailedFoodRequestState extends State<DetailedFoodRequest> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Name: ${donation!.name}',
-                style: _style,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                enabled: false,
+                decoration: InputDecoration(labelText: 'Name'),
+                initialValue: donation!.name,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Food Type: ${donation!.food!.type}', style: _style),
-            ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: donation!.food!.foodItems!.length,
-              itemBuilder: (context, index) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              TextFormField(
+                enabled: false,
+                decoration: InputDecoration(labelText: 'Food Type'),
+                initialValue: donation!.food!.type,
+              ),
+              ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: donation!.food!.foodItems!.length,
+                itemBuilder: (context, index) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      enabled: false,
+                      decoration: InputDecoration(labelText: 'Food Name'),
+                      initialValue: donation!.food!.foodItems![index].name,
+                    ),
+                    TextFormField(
+                      enabled: false,
+                      decoration: InputDecoration(labelText: 'Food amount'),
+                      initialValue:
+                          donation!.food!.foodItems![index].amount.toString(),
+                    ),
+                  ],
+                ),
+              ),
+              TextFormField(
+                enabled: false,
+                decoration: InputDecoration(labelText: 'Have packets'),
+                initialValue: donation!.food!.havePackets == 1 ? 'Yes' : 'No',
+              ),
+              Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        'Food Name: ${donation!.food!.foodItems![index].name}',
-                        style: _style),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        'Food amount: ${donation!.food!.foodItems![index].amount.toString()}',
-                        style: _style),
-                  ),
+                  IconButton(
+                      icon: Icon(Icons.location_on),
+                      onPressed: () {
+                        launchMap();
+                      }),
+                  IconButton(
+                      icon: Icon(Icons.call),
+                      onPressed: () {
+                        launchDialer();
+                      }),
+                  IconButton(
+                      icon: Icon(Icons.mail),
+                      onPressed: () {
+                        sendMail();
+                      })
                 ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                  'Have packets: ${donation!.food!.havePackets == 1 ? 'Yes' : 'No'}',
-                  style: _style),
-            ),
-            Row(
-              children: [
-                IconButton(
-                    icon: Icon(Icons.location_on),
-                    onPressed: () {
-                      launchMap();
-                    }),
-                IconButton(
-                    icon: Icon(Icons.call),
-                    onPressed: () {
-                      launchDialer();
-                    }),
-                IconButton(
-                    icon: Icon(Icons.mail),
-                    onPressed: () {
-                      sendMail();
-                    })
-              ],
-            ),
-            Spacer(),
-            Container(
-                margin: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 20.0),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (donation!.isAccepted == 0) {
-                      //update to accepted in db
-                      final url = Uri.https('pure-mountain-72218.herokuapp.com',
-                          'api/updateDonationRequest.php');
-                      final headers = {
-                        HttpHeaders.contentTypeHeader: 'application/json'
-                      };
-                      final body = jsonEncode({
-                        "donation_id": donation!.id.toString(),
-                        "vol_id": volId!.toString()
-                      });
-                      final response =
-                          await http.put(url, headers: headers, body: body);
-                      var responsebody = json.decode(response.body);
-                      if (responsebody['message'] == 'success') {
-                        Fluttertoast.showToast(
-                            msg: "Donation Request Accepted!");
-                        setState(() {
-                          donation!.isAccepted = 1;
+              Spacer(),
+              Container(
+                  margin: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 20.0),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (donation!.isAccepted == 0) {
+                        //update to accepted in db
+                        final url = Uri.https(
+                            'pure-mountain-72218.herokuapp.com',
+                            'api/updateDonationRequest.php');
+                        final headers = {
+                          HttpHeaders.contentTypeHeader: 'application/json'
+                        };
+                        final body = jsonEncode({
+                          "donation_id": donation!.id.toString(),
+                          "vol_id": volId!.toString()
                         });
-                      }
-                    } else {
-                      //move donation to completed donation in db
-                      final url = Uri.https('pure-mountain-72218.herokuapp.com',
-                          'api/completeDonationRequest.php');
-                      final headers = {
-                        HttpHeaders.contentTypeHeader: 'application/json'
-                      };
-                      final body =
-                          jsonEncode({"donation_id": donation!.id.toString()});
-                      final response =
-                          await http.delete(url, headers: headers, body: body);
-                      var responsebody = json.decode(response.body);
-                      if (responsebody['message'] == 'success') {
-                        Navigator.pop(context, [true]);
+                        final response =
+                            await http.put(url, headers: headers, body: body);
+                        var responsebody = json.decode(response.body);
+                        if (responsebody['message'] == 'success') {
+                          Fluttertoast.showToast(
+                              msg: "Donation Request Accepted!");
+                          setState(() {
+                            donation!.isAccepted = 1;
+                          });
+                        }
                       } else {
-                        Fluttertoast.showToast(
-                            msg: "Network error,try again later!");
+                        //move donation to completed donation in db
+                        final url = Uri.https(
+                            'pure-mountain-72218.herokuapp.com',
+                            'api/completeDonationRequest.php');
+                        final headers = {
+                          HttpHeaders.contentTypeHeader: 'application/json'
+                        };
+                        final body = jsonEncode(
+                            {"donation_id": donation!.id.toString()});
+                        final response = await http.delete(url,
+                            headers: headers, body: body);
+                        var responsebody = json.decode(response.body);
+                        if (responsebody['message'] == 'success') {
+                          Navigator.pop(context, [true]);
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Network error,try again later!");
+                        }
                       }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20))),
-                  child:
-                      Text(donation!.isAccepted == 0 ? 'Accept' : 'Completed'),
-                ))
-          ],
+                    },
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
+                    child: Text(
+                        donation!.isAccepted == 0 ? 'Accept' : 'Completed'),
+                  ))
+            ],
+          ),
         ),
       ),
     );
