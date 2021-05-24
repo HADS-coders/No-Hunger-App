@@ -46,9 +46,8 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                 children: [
                   InkWell(
                     onTap: () async {
-                      Position _location =
-                          await (_determinePosition() as FutureOr<Position>);
-                      print('${_location.latitude}  ${_location.longitude}');
+                      Position? _location = await _determinePosition();
+                      print('${_location!.latitude}  ${_location.longitude}');
                       setState(() {
                         _selectedType = 'get';
                         location = _location;
@@ -59,10 +58,13 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                       trailing: Radio(
                           value: 'get',
                           groupValue: _selectedType,
-                          onChanged: (dynamic value) {
+                          onChanged: (dynamic value) async {
+                            Position? _location = await _determinePosition();
+                            print(
+                                '${_location!.latitude}  ${_location.longitude}');
                             setState(() {
                               _selectedType = value;
-                              _determinePosition();
+                              location = _location;
                             });
                           }),
                     ),
@@ -213,9 +215,8 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
                             }
                             // print(donation.toMap());
 
-                            bool donationSuccessful = await (getFutureData(
-                                    context, sendDonationRequest(donation))
-                                as FutureOr<bool>);
+                            bool donationSuccessful = await getFutureData(
+                                context, sendDonationRequest(donation));
 
                             if (donationSuccessful)
                               Navigator.pushNamed(
@@ -320,9 +321,8 @@ class _AddLocationDetailState extends State<AddLocationDetail> {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
 
-    currentPosition = await (getFutureData(context,
-            Geolocator.getCurrentPosition(timeLimit: Duration(seconds: 100)))
-        as FutureOr<Position?>);
+    currentPosition = await getFutureData(context,
+        Geolocator.getCurrentPosition(timeLimit: Duration(seconds: 100)));
 
     setState(() {
       location = currentPosition;

@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:NoHunger/services/db.dart';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 class Volunteer {
   final String table = 'vol';
@@ -35,7 +34,7 @@ class Volunteer {
         'gender': gender,
         'latitude': latitude,
         'longitude': longitude,
-        'rangeKm': range
+        'rangeKm': range,
       };
 
   Volunteer fromMap(Map data) {
@@ -50,21 +49,36 @@ class Volunteer {
         range: int.parse(data['rangeKm'].toString()));
   }
 
-  Future<void> insertVol(Volunteer vol) async {
-    final Database? db = await Db.getDatabase();
+  // Future<void> insertVol(Volunteer vol) async {
+  //   final Database? db = await Db.getDatabase();
 
-    await db!.insert('vol', vol.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-  }
+  //   await db!.insert('vol', vol.toMap(),
+  //       conflictAlgorithm: ConflictAlgorithm.replace);
+  // }
 
   Future<Volunteer> getVol() async {
-    final Database? db = await Db.getDatabase();
-    List? result = await db!.query(table); //same as select * from table
-    print('Vol from db: $result');
-
-    Volunteer vol = Volunteer().fromMap(result[0]!);
+    var pref = await SharedPreferences.getInstance();
+    int? volId = pref.getInt('vol_id');
+    final Map<String, dynamic> param = {
+      'vol_id': volId.toString(),
+    };
+    final url = Uri.https(
+        'pure-mountain-72218.herokuapp.com', 'api/getVolunteer.php', param);
+    final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+    final response = await http.get(url, headers: headers);
+    Map<String, dynamic> responsebody = json.decode(response.body);
+    Volunteer vol = Volunteer().fromMap(responsebody['data']);
     return vol;
   }
+
+  // Future<Volunteer> getVolFromDb() async {
+  //   final Database? db = await Db.getDatabase();
+  //   List? result = await db!.query(table); //same as select * from table
+  //   print('Vol from db: $result');
+
+  //   Volunteer vol = Volunteer().fromMap(result[0]!);
+  //   return vol;
+  // }
 
   static Future<dynamic> login(String email, String password) async {
     var body = jsonEncode({'email': email, 'password': password});
@@ -82,12 +96,13 @@ class Volunteer {
         print('login succcess');
         print('vol data from response: $data');
         var pref = await SharedPreferences.getInstance();
-        pref.setBool('loggedIn', true);
-        pref.setBool(
+        await pref.setBool('loggedIn', true);
+        await pref.setBool(
             'visited', true); //set onboarding screen to visited on login
         if (data != null) {
           Volunteer vol = Volunteer().fromMap(data);
-          vol.insertVol(vol); //insert into database
+          await pref.setInt('vol_id', vol.id!);
+          // vol.insertVol(vol); //insert into database
           return {'success': success};
         }
       }
@@ -96,10 +111,11 @@ class Volunteer {
   }
 
   static void logout() async {
-    final Database db = await (Db.getDatabase() as FutureOr<Database>);
-    await db.delete('vol');
+    // final Database? db = await Db.getDatabase();
+    // await db!.delete('vol');
 
     var pref = await SharedPreferences.getInstance();
     pref.setBool('loggedIn', false);
+    pref.remove('vol_id');
   }
 }

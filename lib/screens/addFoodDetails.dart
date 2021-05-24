@@ -8,7 +8,7 @@ class AddFoodDetails extends StatefulWidget {
 }
 
 class _AddFoodDetailsState extends State<AddFoodDetails> {
-  var _foodType;
+  String? _foodType;
   var _formKey = GlobalKey<FormState>();
   TextEditingController time = TextEditingController();
   var _foodItemEntries = [];
@@ -53,7 +53,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
                               ))
                           .toList(),
                       hint: Text('Select Food type'),
-                      onChanged: (dynamic value) {
+                      onChanged: (String? value) {
                         setState(() {
                           _foodType = value;
                           _foodItemEntries = [];
@@ -101,7 +101,7 @@ class _AddFoodDetailsState extends State<AddFoodDetails> {
             });
           },
         ),
-      for (Widget item in _foodItemEntries as Iterable<Widget>) item,
+      for (Widget item in _foodItemEntries) item,
       TextButton(
           onPressed: () {
             setState(() {

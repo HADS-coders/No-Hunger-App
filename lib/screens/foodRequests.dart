@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:NoHunger/models/donation.dart';
-import 'package:NoHunger/models/food.dart';
-import 'package:NoHunger/models/foodItem.dart';
 import 'package:NoHunger/models/volunteer.dart';
 import 'package:NoHunger/widgets/donateDialog.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +21,7 @@ class _FoodRequestsState extends State<FoodRequests> {
   ];
   List<Donation>? donations = [];
 
-  Future<Volunteer> getVolFromDb() async {
+  Future<Volunteer> getVol() async {
     Volunteer _vol = await Volunteer().getVol();
     return _vol;
   }
@@ -39,7 +37,8 @@ class _FoodRequestsState extends State<FoodRequests> {
           IconButton(
               icon: Icon(Icons.person),
               onPressed: () {
-                Navigator.pushNamed(context, 'volunteerProfile');
+                Navigator.pushNamed(context, 'volunteerProfile',
+                    arguments: {'data': vol});
               })
         ],
       ),
@@ -65,7 +64,7 @@ class _FoodRequestsState extends State<FoodRequests> {
       ),
       body: SafeArea(
         child: FutureBuilder(
-          future: getVolFromDb(),
+          future: getVol(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               vol = snapshot.data! as Volunteer?;
@@ -80,7 +79,7 @@ class _FoodRequestsState extends State<FoodRequests> {
                         );
                       else
                         return RefreshIndicator(
-                          onRefresh: getDonationRequests,
+                          onRefresh: _refresh,
                           child: ListView.builder(
                               itemCount: donations!.length,
                               itemBuilder: (context, index) => ListTile(
@@ -119,6 +118,14 @@ class _FoodRequestsState extends State<FoodRequests> {
         ),
       ),
     );
+  }
+
+  Future<void> _refresh() async {
+    return getDonationRequests().then((value) {
+      setState(() {
+        donations = value;
+      });
+    });
   }
 
   Future<List<Donation>?> getDonationRequests() async {
